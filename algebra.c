@@ -11,15 +11,15 @@
 // -cosnt
 // -documentation
 
-bool isPrime(int n){
+bool is_prime(const int n){
   assert(n > 1);
 
   int root_n = sqrt(n);
-  int track =0;
+  int track = 0;
 
-  for(int i=2; i <= root_n; ++i){
-    if(n%i==0) {
-      track=1;
+  for(int i =2 ; i <= root_n; ++i){
+    if(n % i == 0) {
+      track = 1;
       break;
     }
   }
@@ -27,8 +27,9 @@ bool isPrime(int n){
 }
 
 
-int* divisionAlg(int a, int b){
+int* division_alg(const int a, const int b){
   assert(b > 0);
+
   int *re = malloc(sizeof(int)*2);
   int q = a/b;
   int r = a-b*q;
@@ -41,23 +42,24 @@ int* divisionAlg(int a, int b){
   return re;
 }
 
-int EE(int a, int b) {
+int EE(const int a, const int b) {
 
-  if(b==0) return abs(a);
-  else if (b==a) return abs(a) ;
+  if(b == 0) return abs(a);
+  else if (b == a) return abs(a) ;
   else{
-    int *re = divisionAlg(a,b);
+    int *re = division_alg(a,b);
     EE(b,re[1]);
   }
 }
 
 int* EEA(int a, int b){
-  assert(a>0);
-  assert(b>0);
-  if(a<b){
-    int temp =a;
+  assert(a > 0);
+  assert(b > 0);
+
+  if(a < b){
+    int temp = a;
     a = b;
-    b=temp;
+    b= temp;
   }
 
   int track_2[4] = {1,0,a,0};
@@ -74,19 +76,20 @@ int* EEA(int a, int b){
   }while(current[2] != 0);
 
 
-  if(a<0) track_2[0] *= -1;
-  if(b<0) track_2[1] *= -1;
+  if(a < 0) track_2[0] *= -1;
+  if(b < 0) track_2[1] *= -1;
+  const int length = 4;
 
-  int *re = malloc(sizeof(int)*4);
-  for(int i =0; i < 4; ++i){
+  int *re = malloc(sizeof(int)*length);
+  for(int i = 0; i < length; ++i){
     re[i] = track_2[i];
   }
 
   return re;
 }
 
-int** PF(int a){
-  assert(a>1);
+int** PF(const int a){
+  assert(a > 1);
 
   int maxlen = 1;
   int len = 1;
@@ -105,10 +108,10 @@ int** PF(int a){
   }
 
   int track = 0;
-  int root_a = sqrt(a);
+  const int root_a = sqrt(a);
 
   for(int i =2; i < root_a; ++i){
-    if(isPrime(i) && (a%i == 0)) {
+    if(isPrime(i) && (a % i == 0)) {
 
       if(len == maxlen){
         maxlen *= 2;
