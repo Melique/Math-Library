@@ -14,7 +14,7 @@
 bool is_prime(const int n){
   assert(n > 1);
 
-  int root_n = sqrt(n);
+  const int root_n = sqrt(n);
   int track = 0;
 
   for(int i =2 ; i <= root_n; ++i){
@@ -33,10 +33,12 @@ int* division_alg(const int a, const int b){
   int *re = malloc(sizeof(int)*2);
   int q = a/b;
   int r = a-b*q;
+
   if (r < 0){
     r += b;
     q = (a-r)/b;
   }
+
   re[0] = q;
   re[1] = r;
   return re;
@@ -78,8 +80,8 @@ int* EEA(int a, int b){
 
   if(a < 0) track_2[0] *= -1;
   if(b < 0) track_2[1] *= -1;
-  const int length = 4;
 
+  const int length = 4;
   int *re = malloc(sizeof(int)*length);
   for(int i = 0; i < length; ++i){
     re[i] = track_2[i];
@@ -98,7 +100,7 @@ int** PF(const int a){
 
   int **re = malloc(3 * sizeof(int*));
 
-  if(isPrime(a)){
+  if(is_prime(a)){
     primes[0] = a;
     occur[0] = 1;
     re[0] = primes;
@@ -111,7 +113,7 @@ int** PF(const int a){
   const int root_a = sqrt(a);
 
   for(int i =2; i < root_a; ++i){
-    if(isPrime(i) && (a % i == 0)) {
+    if(is_prime(i) && (a % i == 0)) {
 
       if(len == maxlen){
         maxlen *= 2;
@@ -136,27 +138,35 @@ int** PF(const int a){
   re[1] = occur;
   len = (len == 1) ? len: --len;
   re[2] = &len;
+
   return re;
 }
 
-double SM(double a, double e, double n){
-  int i =2;
-  double ori = a;
-  while(i < e){
-    a = (int) pow(a, i) % (int) n;
-    i += 2;
-  }
-  double rest = pow(ori, (e-i));
-  double re = (int) (a*rest) % (int) n;
-  return re;
-}
+// long SM(double a, const double e, const double n){
+//   int i = 2;
+//   const double ori = a;
+//   printf("ori: %f\n", ori);
+//
+//   while(i < e){
+//     a = (long) pow(a, 2) % (long) n;
+//     printf("a: %f\n", a);
+//     i *= 2;
+//   }
+//
+//   i /= 2;
+//
+//   long rest = (long) pow(ori, (e-i)) % (long) n;
+//   printf("rest: %ld\n", rest);
+//   long re = (long) (a*rest) % (long) n;
+//   return re;
+// }
+//
+int ** RSA_setUp(const int p, const int q){
+  assert(is_prime(p));
+  assert(is_prime(q));
 
-int ** RSA_setUp(int p, int q){
-  assert(isPrime(p));
-  assert(isPrime(q));
-
-  int n = p*q;
-  int r = (p-1)*(q-1);
+  const int n = p*q;
+  const int r = (p-1)*(q-1);
   int e;
 
   for(int i = 2; i < r; ++i){
@@ -166,40 +176,42 @@ int ** RSA_setUp(int p, int q){
     }
   }
 
-  int *re = EEA(r,e);
+  const int *re = EEA(r,e);
   int *public = malloc(sizeof(int)*2);
   int *private = malloc(sizeof(int)*2);
 
-  int d = (re[1] > 0) ? re[1]: re[1]+r;
+  const int d = (re[1] > 0) ? re[1]: re[1]+r;
 
   public[0] = e;
   public[1] = n;
   private[0] = d;
   private[1] = n;
 
-    int **test = malloc(sizeof(int*)*2);
-    test[0] = public;
-    test[1] = private;
+  int **test = malloc(sizeof(int*)*2);
+  test[0] = public;
+  test[1] = private;
 
-    return test;
+  return test;
 }
+//
+// long RSA_encrypt(int m, int e, int n){
+//   assert(0 <= m);
+//   assert(m < n);
+//
+//   double re = pow((double) m, (double) e);
+//   printf("TEST 2: %d\n", re);
+//   const long C = (int) re % n;
+//   return C;
+// }
+//
+// long RSA_decrypt(const int C, int d, int n){
+//   double re = pow((double) C, (double) d);
+//   printf("TEST 1: %d\n", re);
+//   const long int R = (int) re % n;
+//   return R;
+// }
 
-long RSA_encrypt(int m, int e, int n){
-  assert(0 <= m);
-  assert(m < n);
 
-  double re = pow((double) m, (double) e);
-  printf("TEST 2: %d\n", re);
-  const long C = (int) re % n;
-  return C;
-}
-
-long RSA_decrypt(const int C, int d, int n){
-  double re = pow((double) C, (double) d);
-  printf("TEST 1: %d\n", re);
-  const long int R = (int) re % n;
-  return R;
-}
 //DESTROY FUNCIONS
 int main(){
   // int *test = EEA(1386,322);
@@ -210,7 +222,7 @@ int main(){
   // free(neg);
   // int *temp = divisionAlg(24750,2);
   // printf("%d, %d\n", temp[0],temp[1]);
-  // printf("%d\n", isPrime(8));
+  // printf("%d\n", is_prime(8));
   // int **dole = PF(434511);
   // int length = *(dole[2]);
   //
@@ -226,7 +238,7 @@ int main(){
   // long R = RSA_decrypt(62, 65, 133);
   // printf("R: %ld\n", R);
 
-  printf("%d\n", SM(30, 19, 391));
+  printf("%ld\n", SM(30, 19, 391));
 
 
 }
