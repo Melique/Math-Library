@@ -6,13 +6,15 @@
 #include <math.h>
 #include <string.h>
 
-typedef struct{
+struct Matrix{
   int rows;
   int cols;
   double *data;
-} Matrix;
+}
 
-Matrix * matrix_construct(const int m, const int n){
+typedef struct Matrix Matrix;
+
+Matrix * matrix_create(const int m, const int n){
   assert(m > 0);
   assert(n > 0);
 
@@ -23,6 +25,15 @@ Matrix * matrix_construct(const int m, const int n){
   x->data = malloc(sizeof(double)*m*n);
 
   return x;
+}
+
+void matrix_destroy(Matrix x){
+  assert(x);
+  assert(x->data);
+
+  free(x->data);
+  free(x);
+  x = NULL;
 }
 
 double dot_product(const double *x, const double *y, const int length){
@@ -67,7 +78,7 @@ bool is_orthogonal(const double *x, const double *y, const int length){
   return 0;
 }
 
-double * cross_product(const double *x, const double *y){
+double *cross_product(const double *x, const double *y){
   assert(x);
   assert(y);
 
@@ -79,14 +90,14 @@ double * cross_product(const double *x, const double *y){
   return cross;
 }
 
-double * projection(const double *u, const double *v, const int length){
+double *projection(const double *x, const double *y, const int length){
   assert(u);
   assert(v);
   assert(length > 0);
 
   double *re = malloc(sizeof(double)*length);
-  double dot = dot_product(u, v, length);
-  double mag = pow(magnitude(v, length), 2);
+  double dot = dot_product(x, y, length);
+  double mag = pow(magnitude(y, length), 2);
 
   for(int i =0; i < length; ++i){
     re[i] = (dot/mag)*v[i];
@@ -95,19 +106,20 @@ double * projection(const double *u, const double *v, const int length){
   return re;
 }
 
-double * perpendicular(const double *u, const double *v, const int length){
+double *perpendicular(const double *x, const double *y, const int length){
   assert(u);
   assert(v);
   assert(length > 0);
 
   double *re = malloc(sizeof(double)*length);
 
-  double *proj = projection(u, v, length);
+  double *proj = projection(x, y, length);
 
   for(int i=0; i < length; ++i){
-    re[i] = u[i] - proj[i];
+    re[i] = x[i] - proj[i];
   }
 
+  free(proj);
   return re;
 }
 
@@ -177,7 +189,7 @@ int main(){
   double *dole = perpendicular(v,z,3);
 
   Matrix *helen = matrix_construct(2,3);
-  double test[6] = {0,1,0,1,0,0};
+  double test[12] = {1,0,7,0,0,0,0,0,0,1,0,1};
   helen->data = test;
   bool kelsey = is_RREF(helen);
   printf("\n%s", kelsey ? "true" : "false");
