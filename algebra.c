@@ -50,7 +50,7 @@ int EE(const int a, const int b) {
   else if (b == a) return abs(a) ;
   else{
     int *re = division_alg(a,b);
-    EE(b,re[1]);
+    return EE(b,re[1]);
   }
 }
 
@@ -142,25 +142,25 @@ int** PF(const int a){
   return re;
 }
 
-// long SM(double a, const double e, const double n){
-//   int i = 2;
-//   const double ori = a;
-//   printf("ori: %f\n", ori);
-//
-//   while(i < e){
-//     a = (long) pow(a, 2) % (long) n;
-//     printf("a: %f\n", a);
-//     i *= 2;
-//   }
-//
-//   i /= 2;
-//
-//   long rest = (long) pow(ori, (e-i)) % (long) n;
-//   printf("rest: %ld\n", rest);
-//   long re = (long) (a*rest) % (long) n;
-//   return re;
-// }
-//
+long SM(double a, const double e, const int n){
+  int i = 2;
+  const double ori = a;
+  // printf("ori: %f\n", ori);
+
+  while(i < e){
+    a = (long) pow(a, 2) %  n;
+    // printf("a: %f\n", a);
+    i *= 2;
+  }
+
+  i /= 2;
+
+  long rest = (long) pow(ori, (e-i)) % n;
+  // printf("rest: %ld\n", rest);
+  long re = (long) (a*rest) %  n;
+  return re;
+}
+
 int ** RSA_setUp(const int p, const int q){
   assert(is_prime(p));
   assert(is_prime(q));
@@ -193,16 +193,14 @@ int ** RSA_setUp(const int p, const int q){
 
   return test;
 }
-//
-// long RSA_encrypt(int m, int e, int n){
-//   assert(0 <= m);
-//   assert(m < n);
-//
-//   double re = pow((double) m, (double) e);
-//   printf("TEST 2: %d\n", re);
-//   const long C = (int) re % n;
-//   return C;
-// }
+
+long RSA_encrypt(int m, int e, int n){
+  assert(0 <= m);
+  assert(m < n);
+
+  const long C = SM(m, e, n);
+  return C;
+}
 //
 // long RSA_decrypt(const int C, int d, int n){
 //   double re = pow((double) C, (double) d);
@@ -238,7 +236,7 @@ int main(){
   // long R = RSA_decrypt(62, 65, 133);
   // printf("R: %ld\n", R);
 
-  printf("%ld\n", SM(30, 19, 391));
+  printf("%ld\n", RSA_encrypt(62, 65, 133));
 
 
 }
