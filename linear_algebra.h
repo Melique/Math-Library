@@ -3,17 +3,6 @@
 // This module includes all algorithms and computational task done in Linear Algebra 1
 // (MATH 136) offered at the Univeristy of Waterloo
 
-struct Matrix;
-
-// matrix_create(m, n) creates an m x n martix
-// effects: allocates memory (client must call matrix_destroy)
-// requires:  m, n are postivie integers
-Matrix *matrix_create(const int m, const int n);
-
-// matrix_destroy(x) removes memory
-// effects: x is no longer valid
-void matrix_destroy(Matrix x);
-
 // dot_product(x, y, length) returns the dot product of x and y
 // requires: x and y are valid and length > 0
 // time: O(n)
