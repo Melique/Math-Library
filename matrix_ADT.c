@@ -46,17 +46,13 @@ void print_matrix(const Matrix *x){
   const int ROWS = x->rows;
   const int COLS = x->cols;
 
-  for(int i = 0; i < ROWS*COLS; ++i){
-    int track;
+  // for(int i = 0; i < ROWS*COLS; ++i){
+  //   if(i%COLS == 0)
+  //     printf("\n");
+  //
+  //   printf("%f ", x->data[i * COLS + (i%COLS)]);
+  // }
 
-    if(track == COLS){
-      track = 0;
-      printf("\n");
-    }
-
-    printf("%f\n", x->data[i]);
-
-  }
   for(int i = 0; i < ROWS; ++i){
     for(int j = 0; j < COLS; ++j){
       printf("%f ", x->data[i *COLS + j]);
@@ -76,15 +72,9 @@ Matrix *tranpose(const Matrix *x){
 
   Matrix *trans_x = matrix_create(ROWS, COLS);
 
-
-  if((ROWS == 0) || (COLS == 0)){
-    trans_x->data = x->data;
-    return trans_x;
-  }
-
   for(int i = 0; i < ROWS; ++i){
     for(int j = 0; j < COLS; ++j){
-      trans_x->data[i * COLS + j] = x->data[j * COLS + i];
+      trans_x->data[i * COLS + j] = x->data[j * ROWS + i];
     }
   }
 
@@ -132,6 +122,7 @@ Matrix *scalar_multiply(const Matrix *x, const double C){
   return re;
 }
 
+
 Matrix *matrix_multiply(const Matrix *x, const Matrix *y){
   assert(x);
   assert(y);
@@ -139,32 +130,34 @@ Matrix *matrix_multiply(const Matrix *x, const Matrix *y){
   assert(x->cols > 0);
   assert(x->cols == y->rows);
 
-  const int rows = x->rows;
-  const int cols = y->cols;
-  Matrix *re = matrix_create(rows, cols);
+  const int ROWS = x->rows;
+  const int COLS = y->cols;
+  Matrix *product = matrix_create(ROWS, COLS);
+  const int length = x->cols;
 
-  for(int i = 0; i < rows; ++i){
-    for(int j = 0; j < cols; ++j){
-      re->data[i * cols + j] += ((x->data[i * cols + j]) * (y->data[j *rows+i]));
+  for(int i = 0; i < ROWS; ++i){
+    for(int j = 0; j < COLS; ++j){
+      for(int k = 0; k < length; ++k){
+        product->data[i * COLS + j] += x->data[i * COLS + k]*y->data[k*COLS + j];
+      }
     }
   }
-
-  return re;
+  return product;
 }
 
 int main(){
-  double a[6] = {3,4,-5,1,0,2};
-  double b[3] = {2,-1,6};
-  double c[2] = {1,2};
+  double a[1] = {1};
+  double b[1] = {7};
+  double c[4] = {5,6,7,8};
   double d[4] = {1,2,3,4};
   double e[6] = {1,2,3,4,5,6};
   double f[9] = {1,3,1,-4,0,2,5,9,-3};
 
-  Matrix *dole = matrix_create(2,3);
+  Matrix *dole = matrix_create(1,1);
   dole->data = a;
-  Matrix *chris = matrix_create(3,1);
+  Matrix *chris = matrix_create(1,1);
   chris->data = b;
-  Matrix *pavi = matrix_create(2,1);
+  Matrix *pavi = matrix_create(2,2);
   pavi->data = c;
   Matrix *kabi = matrix_create(2,2);
   kabi->data = d;
@@ -174,21 +167,24 @@ int main(){
   rachel->data = f;
 
   Matrix *dole_three = scalar_multiply(dole, 3);
-  Matrix *chris_T = tranpose(chris);
+  Matrix *dole_T = tranpose(dole);
   Matrix *pavi_T = tranpose(pavi);
   Matrix *kabi_T = tranpose(kabi);
-  Matrix *kyara_T = tranpose(kyara);
-  Matrix *dole_chris = matrix_multiply(dole, chris);
+  Matrix *rachel_T = tranpose(rachel);
+  Matrix *helen = matrix_multiply(dole, chris);
 
-  printf("%d %d\n", dole_chris->rows, dole_chris->cols);
-  print_matrix(chris);
+  // printf("\n");
+  // print_matrix(pavi);
+  // printf("\n");
+  // print_matrix(dole_T);
+  // printf("\n");
+  // print_matrix(kabi);
+  // printf("\n");
+  // print_matrix(helen);
   printf("\n");
-  print_matrix(chris_T);
+  print_matrix(rachel);
   printf("\n");
-  print_matrix(pavi);
-  printf("\n");
-  print_matrix(pavi_T);
-
+  print_matrix(rachel_T);
 
 
 
