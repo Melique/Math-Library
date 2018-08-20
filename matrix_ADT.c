@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <assert.h>
 #include <string.h>
+#include "matrix_ADT.h"
 
 struct Matrix{
   int rows;
@@ -11,22 +12,22 @@ struct Matrix{
   double *data;
 };
 
-typedef struct Matrix Matrix;
+// typedef struct Matrix *Matrix;
 
-Matrix *matrix_create(const int m, const int n){
+struct Matrix *matrix_create(const int m, const int n, double *r){
   assert(m > 0);
   assert(n > 0);
 
-  Matrix *x = malloc(sizeof(Matrix));
+  struct Matrix *x = (struct Matrix *) malloc(sizeof(struct Matrix));
 
   x->rows = m;
   x->cols = n;
-  x->data = malloc(sizeof(double)*m*n);
+  x->data = r;
 
   return x;
 }
 
-void matrix_destroy(Matrix *x){
+void matrix_destroy(struct Matrix *x){
   assert(x);
   assert(x->rows > 0);
   assert(x->cols > 0);
@@ -37,7 +38,17 @@ void matrix_destroy(Matrix *x){
   x = NULL;
 }
 
-void print_matrix(const Matrix *x){
+int get_row(const struct Matrix *x){
+  assert(x);
+  return x->rows;
+}
+
+int get_column(const struct Matrix *x){
+  assert(x);
+  return x->cols;
+}
+
+void print_matrix(const struct Matrix *x){
   assert(x);
   assert(x->rows > 0);
   assert(x->cols > 0);
@@ -59,9 +70,19 @@ void print_matrix(const Matrix *x){
     }
     printf("\n");
   }
+
 }
 
-Matrix *tranpose(const Matrix *x){
+double get_elem(const struct Matrix *x, const int m, const int n){
+  assert(x);
+  assert(m > 0);
+  assert(n > 0);
+  assert(x->data);
+
+  return x->data[m * x->cols + n];
+}
+
+struct Matrix *tranpose(const struct Matrix *x){
   assert(x);
   assert(x->rows > 0);
   assert(x->cols > 0);
@@ -70,7 +91,7 @@ Matrix *tranpose(const Matrix *x){
   const int ROWS = x->cols;
   const int COLS = x->rows;
 
-  Matrix *trans_x = matrix_create(ROWS, COLS);
+  struct Matrix *trans_x = matrix_create(ROWS, COLS, x->data);
 
   for(int i = 0; i < ROWS; ++i){
     for(int j = 0; j < COLS; ++j){
@@ -81,7 +102,7 @@ Matrix *tranpose(const Matrix *x){
   return trans_x;
 }
 
-Matrix *add_matrix(const Matrix *x, const Matrix *y){
+struct Matrix *add_matrix(const struct Matrix *x, const struct Matrix *y){
   assert(x);
   assert(y);
   assert(x->rows == y->rows);
@@ -89,7 +110,7 @@ Matrix *add_matrix(const Matrix *x, const Matrix *y){
   assert(x->rows > 0);
   assert(x->cols > 0);
 
-  Matrix *re = matrix_create(x->rows, x->cols);
+  struct Matrix *re = matrix_create(x->rows, x->cols, x->data);
 
   const int rows = re->rows;
   const int cols = re->cols;
@@ -103,13 +124,13 @@ Matrix *add_matrix(const Matrix *x, const Matrix *y){
   return re;
 }
 
-Matrix *scalar_multiply(const Matrix *x, const double C){
+struct Matrix *scalar_multiply(const struct Matrix *x, const double C){
   assert(x);
   assert(x->rows > 0);
   assert(x->cols > 0);
   assert(x->data);
 
-  Matrix *re = matrix_create(x->rows, x->cols);
+  struct Matrix *re = matrix_create(x->rows, x->cols, x->data);
   const int rows = re->rows;
   const int cols = re->cols;
 
@@ -123,7 +144,7 @@ Matrix *scalar_multiply(const Matrix *x, const double C){
 }
 
 
-Matrix *matrix_multiply(const Matrix *x, const Matrix *y){
+struct Matrix *matrix_multiply(const struct Matrix *x, const struct Matrix *y){
   assert(x);
   assert(y);
   assert(x->rows > 0);
@@ -132,7 +153,7 @@ Matrix *matrix_multiply(const Matrix *x, const Matrix *y){
 
   const int ROWS = x->rows;
   const int COLS = y->cols;
-  Matrix *product = matrix_create(ROWS, COLS);
+  struct Matrix *product = matrix_create(ROWS, COLS, x->data);
   const int length = x->cols;
 
   for(int i = 0; i < ROWS; ++i){
@@ -143,64 +164,4 @@ Matrix *matrix_multiply(const Matrix *x, const Matrix *y){
     }
   }
   return product;
-}
-
-int main(){
-  double a[1] = {1};
-  double b[1] = {7};
-  double c[4] = {5,6,7,8};
-  double d[4] = {1,2,3,4};
-  double e[6] = {1,2,3,4,5,6};
-  double f[9] = {1,3,1,-4,0,2,5,9,-3};
-
-  Matrix *dole = matrix_create(1,1);
-  dole->data = a;
-  Matrix *chris = matrix_create(1,1);
-  chris->data = b;
-  Matrix *pavi = matrix_create(2,2);
-  pavi->data = c;
-  Matrix *kabi = matrix_create(2,2);
-  kabi->data = d;
-  Matrix *kyara = matrix_create(3,2);
-  kyara->data = e;
-  Matrix *rachel = matrix_create(3,3);
-  rachel->data = f;
-
-  Matrix *dole_three = scalar_multiply(dole, 3);
-  Matrix *dole_T = tranpose(dole);
-  Matrix *pavi_T = tranpose(pavi);
-  Matrix *kabi_T = tranpose(kabi);
-  Matrix *rachel_T = tranpose(rachel);
-  Matrix *helen = matrix_multiply(dole, chris);
-
-  // printf("\n");
-  // print_matrix(pavi);
-  // printf("\n");
-  // print_matrix(dole_T);
-  // printf("\n");
-  // print_matrix(kabi);
-  // printf("\n");
-  // print_matrix(helen);
-  printf("\n");
-  print_matrix(rachel);
-  printf("\n");
-  print_matrix(rachel_T);
-
-
-
-  // matrix_destroy(dole);
-  // matrix_destroy(chris);
-  // matrix_destroy(pavi);
-  // matrix_destroy(kabi);
-  // matrix_destroy(kyara);
-  // matrix_destroy(rachel);
-  // matrix_destroy(dole_chris);
-  // matrix_destroy(dole_three);
-  // matrix_destroy(chris_two);
-  // matrix_destroy(pavi_T);
-  // matrix_destroy(kabi_T);
-  // matrix_destroy(kyara_T);
-  // matrix_destroy(rachel_T);
-
-
 }
