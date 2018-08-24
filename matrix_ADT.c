@@ -29,8 +29,6 @@ struct Matrix *matrix_create(const int m, const int n, double *r){
 
 void matrix_destroy(struct Matrix *x){
   assert(x);
-  assert(x->rows > 0);
-  assert(x->cols > 0);
   assert(x->data);
 
   free(x->data);
@@ -38,21 +36,43 @@ void matrix_destroy(struct Matrix *x){
   x = NULL;
 }
 
-int get_row(const struct Matrix *x){
-  assert(x);
+bool is_matrix_valid(const struct Matrix *x){
+  return (x && (x->rows > 0) && (x->cols > 0) && x->data);
+}
+
+int get_rows(const struct Matrix *x){
+  assert(is_matrix_valid(x));
   return x->rows;
 }
 
-int get_column(const struct Matrix *x){
-  assert(x);
+int get_columns(const struct Matrix *x){
+  assert(is_matrix_valid(x));
   return x->cols;
 }
 
-void print_matrix(const struct Matrix *x){
+double *get_data(const struct Matrix *x){
+  assert(is_matrix_valid(x));
+
+  return x->data;
+}
+
+double get_elem(const struct Matrix *x, const int m, const int n){
   assert(x);
-  assert(x->rows > 0);
-  assert(x->cols > 0);
+  assert(m >= 0);
+  assert(n >=  0);
   assert(x->data);
+
+  return x->data[m * x->cols + n];
+}
+
+int sizeof_data(const struct Matrix *x){
+  assert(is_matrix_valid(x));
+
+  return sizeof(x->data)/sizeof(x->data[0]);
+}
+
+void print_matrix(const struct Matrix *x){
+  assert(is_matrix_valid(x));
 
   const int ROWS = x->rows;
   const int COLS = x->cols;
@@ -73,20 +93,8 @@ void print_matrix(const struct Matrix *x){
 
 }
 
-double get_elem(const struct Matrix *x, const int m, const int n){
-  assert(x);
-  assert(m > 0);
-  assert(n > 0);
-  assert(x->data);
-
-  return x->data[m * x->cols + n];
-}
-
 struct Matrix *tranpose(const struct Matrix *x){
-  assert(x);
-  assert(x->rows > 0);
-  assert(x->cols > 0);
-  assert(x->data);
+  assert(is_matrix_valid(x));
 
   const int ROWS = x->cols;
   const int COLS = x->rows;
@@ -125,10 +133,7 @@ struct Matrix *add_matrix(const struct Matrix *x, const struct Matrix *y){
 }
 
 struct Matrix *scalar_multiply(const struct Matrix *x, const double C){
-  assert(x);
-  assert(x->rows > 0);
-  assert(x->cols > 0);
-  assert(x->data);
+  assert(is_matrix_valid(x));
 
   struct Matrix *re = matrix_create(x->rows, x->cols, x->data);
   const int rows = re->rows;
@@ -164,4 +169,95 @@ struct Matrix *matrix_multiply(const struct Matrix *x, const struct Matrix *y){
     }
   }
   return product;
+}
+
+struct Matrix *scalar_multiply_row(const struct Matrix *x, const int row_num, const double C) {
+  assert(is_matrix_valid(x));
+  assert(0 < row_num <= x->rows);
+  assert(C);
+
+  const int ROWS = x->rows;
+  const int COLS = x->cols;
+  struct Matrix *re = matrix_create(ROWS, COLS, x->data);
+
+  for(int i = 0; i < ROWS; ++i){
+    for(int j = 0; j < COLS; ++j){
+      if(i == row_num){
+        re->data[i * COLS + j] = C*x->data[i * COLS + j];
+      }
+      else{
+        re->data[i * COLS + j] = C*x->data[i * COLS + j];
+      }
+    }
+  }
+
+  return re;
+}
+
+struct Matrix *addition_row(const struct Matrix *x, const int l, const int m, const double C){
+  assert(is_matrix_valid(x));
+  assert(0 < l <= x->rows);
+  assert(0 < m <= x->rows);
+
+  const int ROWS = x->rows;
+  const int COLS = x->cols;
+  struct Matrix *re = matrix_create(ROWS, COLS, x->data);
+
+  double *row_l = malloc(sizeof(double)*COLS);
+
+  for(int i = 0; i < COLS; ++i){
+    row_l[i] = x->data[(l-1)*COLS + i] + C*x->data[(m-1)*COLS + i];
+
+  }
+
+  for(int i = 0; i < ROWS; ++i){
+    for(int j = 0; j < COLS; ++j){
+      if(i == (l-1)){
+        re->data[i * COLS + j] = row_l[j];
+      }
+      else{
+        re->data[i * COLS + j] = x->data[i * COLS + j];
+      }
+    }
+  }
+  free(row_l);
+  return re;
+}
+
+struct Matrix *swap(const struct Matrix *x, const int l, const int m){
+  assert(is_matrix_valid(x));
+  assert(0 < l <= x->rows);
+  assert(0 < m <= x->rows);
+
+  const int ROWS = x->rows;
+  const int COLS = x->cols;
+
+  double *row_l = malloc(sizeof(double)*COLS);
+  double *row_m = malloc(sizeof(double)*COLS);
+
+  struct Matrix *re = matrix_create(ROWS, COLS, x->data);
+
+  for(int i = 0; i < COLS; ++i){
+    row_l[i] = x->data[l * COLS + i];
+    row_m[i] = x->data[m * COLS + i];
+  }
+
+  for(int i = 0; i < ROWS; ++i){
+    for(int j = 0; j < COLS; ++j){
+      if(i == l){
+        re->data[i * COLS + j] = row_l[j];
+      }
+      else if(i == m){
+        re->data[i * COLS + j] = row_m[j];
+      }
+      else{
+        re->data[i * COLS + j] = x->data[i * COLS + j];
+      }
+    }
+  }
+
+  free(row_l);
+  free(row_m);
+
+  return re;
 }
