@@ -37,6 +37,9 @@ double *get_data(const struct Matrix *x);
 // get_elem(x, m, n) returns the element at postion m,n in x
 double get_elem(const struct Matrix *x, const int m, const int n);
 
+// sizeof_data(x) returns the total number of elements
+int sizeof_data(const struct Matrix *x);
+
 // print_matrix(x) outputs the x as a matrix
 // effects: output
 // requires: x is valid
@@ -53,37 +56,37 @@ struct Matrix *tranpose(const struct Matrix *x);
 // effects: allocates memory (client must call matrix_destroy)
 // requires: x, y are valid
 // time: O(mn)
-struct Matrix *add_matrix(const struct Matrix *x, const struct Matrix *y);
+struct Matrix *add(const struct Matrix *x, const struct Matrix *y);
 
 // scalar_multiply(x, C) returns scalar multiplication of C and x
 // effects: allocates memory (client must call matrix_destroy)
 // requires: x is valid
 // time: O(mn)
-struct Matrix *scalar_multiply(const struct Matrix *x, const double C);
+struct Matrix *smulti(const struct Matrix *x, const double C);
 
 // matrix_multiply(x, y) returns matrix multiplication of x and y
 // effects: allocates memory (client must call matrix_destroy)
 // requires: x, y are valid
 // time: O(mnl)
-struct Matrix *matrix_multiply(const struct Matrix *x, const struct Matrix *y);
+struct Matrix *mmulti(const struct Matrix *x, const struct Matrix *y);
 
 // scalar_multiply_row(x, row_num, C) multiplies row_num in x by C and returns
 //  a new matrix
 // effects: allocates memory (client must call matrix_destroy)
 // requires: x is valid, row_num is a valid row, and C is an non-zero integer
 // time: O(mn)
-struct Matrix *scalar_multiply_row(const struct Matrix *x, const int row_num, const double C);
+struct Matrix *smERO(const struct Matrix *x, const int row_num, const double C);
 
 // addition_row(x, l, m, C) returns a new matrix of row_l + C*row_m
 // effects: allocates memory (client must call matrix_destroy)
 // requires: x is valid, l and m are a valid row, and C is an integer
 // time: O(mn)
-struct Matrix *addition_row(const struct Matrix *x, const int l, const int m, const double C);
+struct Matrix *aERO(const struct Matrix *x, const int l, const int m, const double C);
 
 // swap(x, l, m) swaps row l and row m and returns a new matrix
 // effects: allocates memory (client must call matrix_destroy)
 // requires: x is valid, l and m are a valid row
 // time: O(mn)
-struct Matrix *swap(const struct Matrix *x, const int l, const int m);
+struct Matrix *swapERO(const struct Matrix *x, const int l, const int m);
 
 #endif

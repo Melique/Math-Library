@@ -12,8 +12,6 @@ struct Matrix{
   double *data;
 };
 
-// typedef struct Matrix *Matrix;
-
 struct Matrix *matrix_create(const int m, const int n, double *r){
   assert(m > 0);
   assert(n > 0);
@@ -31,7 +29,7 @@ void matrix_destroy(struct Matrix *x){
   assert(x);
   assert(x->data);
 
-  free(x->data);
+  //free(x->data); Was never being allocated
   free(x);
   x = NULL;
 }
@@ -77,13 +75,6 @@ void print_matrix(const struct Matrix *x){
   const int ROWS = x->rows;
   const int COLS = x->cols;
 
-  // for(int i = 0; i < ROWS*COLS; ++i){
-  //   if(i%COLS == 0)
-  //     printf("\n");
-  //
-  //   printf("%f ", x->data[i * COLS + (i%COLS)]);
-  // }
-
   for(int i = 0; i < ROWS; ++i){
     for(int j = 0; j < COLS; ++j){
       printf("%f ", x->data[i *COLS + j]);
@@ -110,7 +101,7 @@ struct Matrix *tranpose(const struct Matrix *x){
   return trans_x;
 }
 
-struct Matrix *add_matrix(const struct Matrix *x, const struct Matrix *y){
+struct Matrix *add(const struct Matrix *x, const struct Matrix *y){
   assert(x);
   assert(y);
   assert(x->rows == y->rows);
@@ -132,7 +123,7 @@ struct Matrix *add_matrix(const struct Matrix *x, const struct Matrix *y){
   return re;
 }
 
-struct Matrix *scalar_multiply(const struct Matrix *x, const double C){
+struct Matrix *smulti(const struct Matrix *x, const double C){
   assert(is_matrix_valid(x));
 
   struct Matrix *re = matrix_create(x->rows, x->cols, x->data);
@@ -149,7 +140,7 @@ struct Matrix *scalar_multiply(const struct Matrix *x, const double C){
 }
 
 
-struct Matrix *matrix_multiply(const struct Matrix *x, const struct Matrix *y){
+struct Matrix *mmulti(const struct Matrix *x, const struct Matrix *y){
   assert(x);
   assert(y);
   assert(x->rows > 0);
@@ -171,7 +162,7 @@ struct Matrix *matrix_multiply(const struct Matrix *x, const struct Matrix *y){
   return product;
 }
 
-struct Matrix *scalar_multiply_row(const struct Matrix *x, const int row_num, const double C) {
+struct Matrix *smERO(const struct Matrix *x, const int row_num, const double C) {
   assert(is_matrix_valid(x));
   assert(0 < row_num <= x->rows);
   assert(C);
@@ -194,7 +185,7 @@ struct Matrix *scalar_multiply_row(const struct Matrix *x, const int row_num, co
   return re;
 }
 
-struct Matrix *addition_row(const struct Matrix *x, const int l, const int m, const double C){
+struct Matrix *aERO(const struct Matrix *x, const int l, const int m, const double C){
   assert(is_matrix_valid(x));
   assert(0 < l <= x->rows);
   assert(0 < m <= x->rows);
@@ -224,7 +215,7 @@ struct Matrix *addition_row(const struct Matrix *x, const int l, const int m, co
   return re;
 }
 
-struct Matrix *swap(const struct Matrix *x, const int l, const int m){
+struct Matrix *swapERO(const struct Matrix *x, const int l, const int m){
   assert(is_matrix_valid(x));
   assert(0 < l <= x->rows);
   assert(0 < m <= x->rows);
