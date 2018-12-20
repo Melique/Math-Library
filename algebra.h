@@ -1,7 +1,10 @@
 // algebra.h [INTERFACE]
 
-// This module includes all algorithms taught in MATH 135 offered at the
-// University of Waterloo
+// This module includes algorithms and computational task done in Algebra
+// (MATH 135) offered at the University of Waterloo
+
+#ifndef ALG_H_
+#define ALG_H_
 
 // is_prime(n) determines if n is a prime number
 // requires: n > 1
@@ -33,4 +36,6 @@ int** PF(const int a);
 // RSA_setUp(p, q) returns the private and public key
 // requires: p and q are prime, caller has to free memory
 // time: O(n)
-int ** RSA_setUp(const int p, const int q);
+int** RSA_setUp(const int p, const int q);
+
+#endif

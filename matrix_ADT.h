@@ -28,9 +28,6 @@ int get_rows(const struct Matrix *x);
 // get_row(x) returns the number of rows in x
 int get_columns(const struct Matrix *x);
 
-// get_row(x) returns the number of rows in x
-int get_rows(const struct Matrix *x);
-
 // get_row(x) returns the data in x
 double *get_data(const struct Matrix *x);
 

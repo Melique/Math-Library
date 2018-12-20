@@ -1,7 +1,10 @@
 // calculus.h [INTERFACE]
 
-// This module includes all algorithms taught in MATH 137 and 138 offered at the
-// University of Waterloo
+// This module includes algorithms and computational task taught in Calulus 1
+//  and 2 (MATH 137 and 138) offered at the University of Waterloo
+
+#ifndef CALC_H_
+#define CALC_H_
 
 // heron(alpha,a, n) returns the square root of alpha by the Heron Algorithm
 //  where a is the starting value and n is the number of iterations
@@ -21,3 +24,9 @@ double bisection(double a, double b, double (*fp)(double));
 // requires: x is close to point c such that fp(c)=0 (IVT) and fp is differentiable
 //  a x
 double newton(double x, const double (*fp)(double), const double (*fprimep)(double));
+
+// num_dev(fp, x) uses the defition of a derivative to find an approximation of f'(x)
+// requires: fp is a valid function pointer and x is defined at f'(x)
+double num_dev(double (*fp)(double), const double x);
+
+#endif

@@ -10,6 +10,7 @@ struct Matrix{
   int rows;
   int cols;
   double *data;
+  int size;
 };
 
 struct Matrix *matrix_create(const int m, const int n, double *r){
@@ -21,6 +22,7 @@ struct Matrix *matrix_create(const int m, const int n, double *r){
   x->rows = m;
   x->cols = n;
   x->data = r;
+  x->size = m*n;
 
   return x;
 }
@@ -66,7 +68,7 @@ double get_elem(const struct Matrix *x, const int m, const int n){
 int sizeof_data(const struct Matrix *x){
   assert(is_matrix_valid(x));
 
-  return sizeof(x->data)/sizeof(x->data[0]);
+  return x->size;
 }
 
 void print_matrix(const struct Matrix *x){

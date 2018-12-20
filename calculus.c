@@ -22,22 +22,6 @@ double heron(const double alpha, double a, int n){
   }
 }
 
-double f(double x){
-  return (x*x -3);
-}
-
-double g(double x){
-  return (pow(E, -1*x)*(3.2*sin(x)-0.5*cos(x)));
-}
-
-double h(double x){
-  return (pow(E,x));
-}
-
-double hprime(double x){
-  return 2*x;
-}
-
 double bisection(const double epi, double a, double b, double (*fp)(double)){
   assert(epi > 0);
   assert(a < b);
@@ -74,34 +58,4 @@ double num_dev(double (*fp)(double), const double x){
   double y1 = fp(x1);
   double y2 = fp(x2);
   return (y2 - y1)/(x2 - x1);
-}
-
-int first_dev_test()
-int main(){
-  double test = heron(17, 4, 10);
-  printf("%.10lf\n", test);
-
-  double (*fp)(double) = f;
-  double (*sin_)(double) = sin;
-  double (*gp)(double) = g;
-  double (*hp)(double) = h;
-  double (*hprimep)(double) = hprime;
-
-  test = num_dev(fp, 3);
-  printf("%.10lf\n", test);
-
-  test = num_dev(gp, -2);
-  printf("%.10lf\n", test);
-
-  test = num_dev(hp, 0.5);
-  printf("%.10lf\n", test);
-
-  // test = bisection(0.001, 3, 4, gp);
-  // printf("%.10lf\n", test);
-  //
-  // test = bisection(0.00001, 1, 99, sin_);
-  // printf("%.10lf\n", test);
-  //
-  // test = newton(0.000000001, 1, hp, hprimep);
-  // printf("%.10lf\n", test);
 }

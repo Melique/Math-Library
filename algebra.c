@@ -6,11 +6,6 @@
 #include <math.h>
 #include <string.h>
 
-//Todo:
-// -destroy functions
-// -cosnt
-// -documentation
-
 bool is_prime(const int n){
   assert(n > 1);
 
@@ -24,6 +19,7 @@ bool is_prime(const int n){
     }
   }
   if(track == 0) return 1;
+  return 0;
 }
 
 
@@ -61,7 +57,7 @@ int* EEA(int a, int b){
   if(a < b){
     int temp = a;
     a = b;
-    b= temp;
+    b = temp;
   }
 
   int track_2[4] = {1,0,a,0};
@@ -145,18 +141,15 @@ int** PF(const int a){
 long SM(double a, const double e, const int n){
   int i = 2;
   const double ori = a;
-  // printf("ori: %f\n", ori);
 
   while(i < e){
     a = (long) pow(a, 2) %  n;
-    // printf("a: %f\n", a);
     i *= 2;
   }
 
   i /= 2;
 
   long rest = (long) pow(ori, (e-i)) % n;
-  // printf("rest: %ld\n", rest);
   long re = (long) (a*rest) %  n;
   return re;
 }
@@ -200,43 +193,4 @@ long RSA_encrypt(int m, int e, int n){
 
   const long C = SM(m, e, n);
   return C;
-}
-//
-// long RSA_decrypt(const int C, int d, int n){
-//   double re = pow((double) C, (double) d);
-//   printf("TEST 1: %d\n", re);
-//   const long int R = (int) re % n;
-//   return R;
-// }
-
-
-//DESTROY FUNCIONS
-int main(){
-  // int *test = EEA(1386,322);
-  // printf("x=%d, y=%d, d=%d, q=%d\n", test[0],test[1],test[2],test[3]);
-  // free(test);
-  // int *neg = EEA(231,660);
-  // printf("x=%d, y=%d, d=%d, q=%d\n", neg[0],neg[1],neg[2],neg[3]);
-  // free(neg);
-  // int *temp = divisionAlg(24750,2);
-  // printf("%d, %d\n", temp[0],temp[1]);
-  // printf("%d\n", is_prime(8));
-  // int **dole = PF(434511);
-  // int length = *(dole[2]);
-  //
-  // for(int i = 0; i < length; ++i){
-  //   printf("%d: %d \n", dole[0][i], dole[1][i]);
-  // }
-
-  // int **jacob = RSA_setUp(7, 19);
-  // printf("\npublic: %d,%d\n", jacob[0][0], jacob[0][1]);
-  // printf("private: %d,%d\n", jacob[1][0], jacob[1][1]);
-  // long C = RSA_encrypt(6, 5, 133);
-  // printf("C: %ld\n", C);
-  // long R = RSA_decrypt(62, 65, 133);
-  // printf("R: %ld\n", R);
-
-  printf("%ld\n", RSA_encrypt(62, 65, 133));
-
-
 }
