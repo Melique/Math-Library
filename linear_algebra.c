@@ -141,7 +141,7 @@ struct Matrix *perpendicular(const struct Matrix *x, const struct Matrix *y){
   return re;
 }
 
-int arj_max(double *x, int a, int b, int ROWS, int COLS){
+static int arj_max(double *x, int a, int b, int ROWS, int COLS){
   assert(x);
 
   int track = a*COLS + b;
@@ -154,18 +154,18 @@ int arj_max(double *x, int a, int b, int ROWS, int COLS){
       track = i*COLS + b;
     }
   }
-  printf("MAX: %f\n", large);
-  printf("INDEX: %d\n", track);
+  // printf("MAX: %f\n", large);
+  // printf("INDEX: %d\n", track);
   return track;
 }
 
 
-static void swap(double *x, const int ROWS, const int COLS, int l, int m){
+void swap(double *x, const int ROWS, const int COLS, int l, int m){
   assert(x);
-  // assert(l >= 0);
-  // assert(m >= 0);
-  // assert(l <= ROWS);
-  // assert(m <= ROWS);
+  assert(l >= 0);
+  assert(m >= 0);
+  assert(l <= ROWS);
+  assert(m <= ROWS);
 
   double *row_l = malloc(sizeof(double)*COLS);
   double *row_m = malloc(sizeof(double)*COLS);
@@ -191,6 +191,7 @@ static void swap(double *x, const int ROWS, const int COLS, int l, int m){
 
   free(row_l);
   free(row_m);
+
 }
 
 void GJE(struct Matrix *x){
@@ -200,79 +201,53 @@ void GJE(struct Matrix *x){
   const int ROWS = get_rows(x);
   const int COLS = get_columns(x);
 
-  double *old_matrix = get_data(x);
+  double *data = get_data(x);
+  // printf("NO CHANGE: \n");
+  // for(int p = 0; p < ROWS; ++p){
+  //   for(int q = 0; q < COLS; ++q){
+  //     printf("%f ", data[p*COLS + q]);
+  //   }
+  //   printf("\n");
+  // }
 
-  int a = 0;
-  int b = 0;
+  int row_track = 0;
+  int col_track = 0;
 
-  while(a < ROWS && b < COLS){
-    int max_pivot = arj_max(old_matrix, a, b, ROWS, COLS);
-    if (old_matrix[max_pivot*COLS + b] == 0){
-      ++b;
+  while(row_track < ROWS && col_track < COLS){ //dont know max{ROWS,COLS}
+    int max_pivot = arj_max(data, row_track, col_track, ROWS, COLS); //try to find non-zerp
+    if(max_pivot == 0){ // free var
+      ++col_track;
     }
-    else{
-      swap(old_matrix, ROWS, COLS , a, max_pivot);
-      for(int i = a + 1; i < ROWS; ++i){
-        float scalar = old_matrix[i*COLS + b] / old_matrix[a*COLS + b];
-        old_matrix[a*COLS + b] = 1;
-        old_matrix[i*COLS + b] = 0;
 
-        for(int j = b + 1; j < COLS; ++j){
-          old_matrix[i*COLS + j] = old_matrix[i*COLS + j] - scalar*old_matrix[a*COLS + j];
-        }
+    swap(data, ROWS, COLS, (max_pivot/COLS), col_track);
+
+    float temp_scalar = data[row_track*COLS];
+    for(int i = col_track; i < COLS; ++i){
+      data[row_track*COLS + i] = data[row_track*COLS + i] / temp_scalar;
+    }
+
+    // for(int j = row_track+1; j < ROWS; ++j){
+    //   data[j*COLS + col_track] = 0;
+    //
+    // }
+
+    for(int k = row_track + 1; k < ROWS; ++k){
+      float shefali_scale = data[k*COLS + col_track];
+      printf("SHEFALI SCALE: %f \n", shefali_scale);
+      for(int l = col_track; l < COLS; ++l){
+        data[k*COLS+l] = data[k*COLS+l] - shefali_scale*data[row_track*COLS+l];
       }
     }
 
-    ++a;
-    ++b;
-  }
-
-  for(int p = 0; p < ROWS; ++p){
-    for(int q = 0; q < COLS; ++q){
-      printf("%f ", old_matrix[p*COLS + q]);
-    }
     printf("\n");
+    for(int p = 0; p < ROWS; ++p){
+      for(int q = 0; q < COLS; ++q){
+        printf("%f ", data[p*COLS + q]);
+      }
+      printf("\n");
+    }
+    ++row_track;
+    ++col_track;
   }
+
 }
-
-
-
-
-//   while(a < ROWS && b < COLS){
-//     int max_pivot = arj_max(old_matrix, a, b, ROWS, COLS);
-//     if(max_pivot == 0){
-//       ++b;
-//     }
-//     else {
-//       swap(old_matrix, ROWS, COLS, a, (max_pivot/ROWS));
-//
-//       int temp = old_matrix[a+1];
-//       for(int i = a + 1; i < ROWS; ++i){
-//         old_matrix[i*COLS+b] = 0;
-//         int scalar = old_matrix[i*COLS + b] / old_matrix[a*COLS +b];
-//
-//
-//         for(int k = 0; )
-//
-//         for(int p = 0; p < ROWS; ++p){
-//           for(int q = 0; q < COLS; ++q){
-//             printf("%f ", old_matrix[p*COLS + q]);
-//           }
-//           printf("\n");
-//
-//         }
-//         printf("HERE2\n");
-//
-//         printf("HERE3\n");
-//
-//         printf("HERE1");
-//         for(int j = b + 1; j < COLS; ++j){
-//           printf("HERE");
-//           old_matrix[i*COLS + j] = old_matrix[i*COLS + j] - scalar*old_matrix[a*COLS + j];
-//         }
-//       }
-//       break;
-//     }
-//     break;
-//   }
-// }
