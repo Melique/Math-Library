@@ -71,6 +71,13 @@ int sizeof_data(const struct Matrix *x){
   return x->size;
 }
 
+void data_change(struct Matrix *x, double *r){
+  assert(x);
+  assert(r);
+
+  x->data = r;
+
+}
 void print_matrix(const struct Matrix *x){
   assert(is_matrix_valid(x));
 

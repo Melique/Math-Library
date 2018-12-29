@@ -37,6 +37,8 @@ double get_elem(const struct Matrix *x, const int m, const int n);
 // sizeof_data(x) returns the total number of elements
 int sizeof_data(const struct Matrix *x);
 
+void data_change(struct Matrix *x, double *r);
+
 // print_matrix(x) outputs the x as a matrix
 // effects: output
 // requires: x is valid

@@ -154,8 +154,7 @@ static int arj_max(double *x, int a, int b, int ROWS, int COLS){
       track = i*COLS + b;
     }
   }
-  // printf("MAX: %f\n", large);
-  // printf("INDEX: %d\n", track);
+  printf("INDEX: %d \nVALUE: %f", track, large);
   return track;
 }
 
@@ -194,7 +193,7 @@ void swap(double *x, const int ROWS, const int COLS, int l, int m){
 
 }
 
-void GJE(struct Matrix *x){
+void GE(struct Matrix *x){
   assert(x);
   assert(is_matrix_valid(x));
 
@@ -202,52 +201,15 @@ void GJE(struct Matrix *x){
   const int COLS = get_columns(x);
 
   double *data = get_data(x);
-  // printf("NO CHANGE: \n");
-  // for(int p = 0; p < ROWS; ++p){
-  //   for(int q = 0; q < COLS; ++q){
-  //     printf("%f ", data[p*COLS + q]);
-  //   }
-  //   printf("\n");
-  // }
 
-  int row_track = 0;
-  int col_track = 0;
-
-  while(row_track < ROWS && col_track < COLS){ //dont know max{ROWS,COLS}
-    int max_pivot = arj_max(data, row_track, col_track, ROWS, COLS); //try to find non-zerp
-    if(max_pivot == 0){ // free var
-      ++col_track;
-    }
-
-    swap(data, ROWS, COLS, (max_pivot/COLS), col_track);
-
-    float temp_scalar = data[row_track*COLS];
-    for(int i = col_track; i < COLS; ++i){
-      data[row_track*COLS + i] = data[row_track*COLS + i] / temp_scalar;
-    }
-
-    // for(int j = row_track+1; j < ROWS; ++j){
-    //   data[j*COLS + col_track] = 0;
-    //
-    // }
-
-    for(int k = row_track + 1; k < ROWS; ++k){
-      float shefali_scale = data[k*COLS + col_track];
-      printf("SHEFALI SCALE: %f \n", shefali_scale);
-      for(int l = col_track; l < COLS; ++l){
-        data[k*COLS+l] = data[k*COLS+l] - shefali_scale*data[row_track*COLS+l];
+  for(int i = 0; i < ROWS; ++i){
+    for(int j = 0; j < COLS; ++j){
+      if(i != j){
+        float scalar = x[j*COLS +i]/x[i*COLS+i];
+        for(int k = 0; k < 4; ++k){
+          x[j*COLS+k] = x[j*COLS+k] - scalar*x[i*COLS+k];
+        }
       }
     }
-
-    printf("\n");
-    for(int p = 0; p < ROWS; ++p){
-      for(int q = 0; q < COLS; ++q){
-        printf("%f ", data[p*COLS + q]);
-      }
-      printf("\n");
-    }
-    ++row_track;
-    ++col_track;
   }
-
 }

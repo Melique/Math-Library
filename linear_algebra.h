@@ -44,4 +44,9 @@ struct Matrix *projection(const struct Matrix *x, const struct Matrix *y);
 // time: O(n)
 struct Matrix *perpendicular(const struct Matrix *x, const struct Matrix *y);
 
+struct Matrix *GE(struct Matrix *x);
+
+void swap(double *x, const int ROWS, const int COLS, int l, int m);
+
+int arj_max(double *x, int a, int b, int ROWS, int COLS);
 #endif
