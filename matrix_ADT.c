@@ -78,6 +78,7 @@ void data_change(struct Matrix *x, double *r){
   x->data = r;
 
 }
+
 void print_matrix(const struct Matrix *x){
   assert(is_matrix_valid(x));
 
@@ -260,4 +261,30 @@ struct Matrix *swapERO(const struct Matrix *x, const int l, const int m){
   free(row_m);
 
   return re;
+}
+
+bool equality(const struct Matrix *x, const struct Matrix *y){
+  assert(x);
+  assert(is_matrix_valid(x));
+  assert(y);
+  assert(is_matrix_valid(y));
+
+  const int X_ROWS = get_rows(x);
+  const int X_COLS = get_columns(x);
+  const int Y_ROWS = get_rows(y);
+  const int Y_COLS = get_columns(y);
+
+  const double *X_DATA = get_data(x);
+  const double *Y_DATA = get_data(y);
+
+
+  if (X_ROWS != Y_ROWS || X_COLS != Y_COLS)return 0;
+
+  for(int i = 0; i < X_ROWS; ++i){
+    for(int j = 0; j < X_COLS; ++j){
+      if(X_DATA[i*X_COLS + j] != Y_DATA[i*X_COLS + j]) return 0;
+    }
+  }
+
+  return 1;
 }

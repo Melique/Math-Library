@@ -7,6 +7,9 @@
 #include <string.h>
 #include "matrix_ADT.h"
 
+extern double deter(const struct Matrix *x);
+extern double cofactor(const struct Matrix *x, const int row, const int col);
+// TODO: design for linear mappings and vector spaces
 //typedef struct Matrix *Matrix;
 
 double dot_product(const struct Matrix *x, const struct Matrix *y){
@@ -193,6 +196,36 @@ void swap(double *x, const int ROWS, const int COLS, int l, int m){
 
 }
 
+int rank(struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  const double *data = get_data(x);
+  const int ROWS = get_rows(x);
+  const int COLS = get_columns(x);
+  int track = 0;
+
+  for(int i = 0; i < ROWS; ++i){
+    for(int j = i; j < COLS; ++j){
+      if(data[i*COLS + j] != 0){
+        ++track;
+        break;
+      }
+    }
+  }
+
+  // for(int i = 0; i < ROWS; ++i){
+  //   if(data[i*COLS + i] != 0){
+  //     ++track;
+  //   }
+  //   else {
+  //     for(int j = i)
+  //   }
+  // }
+
+  return track;
+}
+
 void GE(struct Matrix *x){
   assert(x);
   assert(is_matrix_valid(x));
@@ -201,15 +234,101 @@ void GE(struct Matrix *x){
   const int COLS = get_columns(x);
 
   double *data = get_data(x);
+  int result;
 
   for(int i = 0; i < ROWS; ++i){
     for(int j = 0; j < COLS; ++j){
       if(i != j){
-        float scalar = x[j*COLS +i]/x[i*COLS+i];
-        for(int k = 0; k < 4; ++k){
-          x[j*COLS+k] = x[j*COLS+k] - scalar*x[i*COLS+k];
+        float scalar = (data[i*COLS+i] != 0) ? data[j*COLS +i]/data[i*COLS+i]: 0;
+        for(int k = 0; k < COLS; ++k){
+          if(data[j*COLS + k] == 0){
+
+          }
+          data[j*COLS+k] = data[j*COLS+k] - scalar*data[i*COLS+k];
         }
       }
     }
   }
 }
+
+bool is_invertible(struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  const int ROWS = get_rows(x);
+  GE(x);
+
+  return rank(x) == ROWS;
+}
+
+double deter2(const struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+  assert(get_rows(x) == 2 && get_columns(x) == 2);
+
+  const double *data = get_data(x);
+
+  double result = data[0]*data[3] - data[1]*data[2];
+  return result;
+}
+
+static double *partial_clone(const double *x, const int ROWS, int row, int col){
+  assert(x);
+  assert((0 < row) && (row < ROWS));
+  assert((0 < col) && (col < ROWS));
+
+  double *re = malloc(sizeof(double)*ROWS*ROWS);
+
+  for(int i = 0; i < ROWS; ++i){
+    for(int j = 0; j < ROWS; ++j){
+      if((i != row) || (j != col)) re[i*ROWS + j] = x[i*ROWS + j];
+    }
+  }
+
+  return re;
+}
+
+double cofactor(const struct Matrix *x, const int row, const int col){
+  assert(x);
+  assert(is_matrix_valid(x));
+  assert(get_rows(x) == get_columns(x));
+  //assert(((row != 0) && (col == 0)) || ((row == 0) && (col != 0)))
+  const int ROWS = get_rows(x);
+  const double *data = get_data(x);
+
+  double accum;
+
+  if((ROWS - 1) == 2){ //BASE CASE
+    double *re_data = partial_clone(data, ROWS - 1, row, col);
+    struct Matrix *re = matrix_create(ROWS-1, ROWS-1, re_data);
+    accum = pow((-1), row + col)*deter2(re);
+    free(re);
+    return accum;
+  }else{
+    double *re_data = partial_clone(data, ROWS - 1, row, col);
+    struct Matrix *re = matrix_create(ROWS-1, ROWS-1, re_data);
+    double idk = deter(re);
+    accum = pow((-1), row + col)*idk;
+    free(re);
+    return accum;
+  }
+}
+
+double deter(const struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+  assert(get_rows(x) == get_columns(x));
+
+  const int ROWS = get_rows(x);
+  const double *data = get_data(x);
+  double accum;
+
+  if(ROWS == 1) return data[0];
+  else if(ROWS == 2) return deter2(x);
+
+  for(int i = 0; i < ROWS; ++i){
+    accum += data[i*ROWS]*cofactor(x, i, 0);
+    }
+
+    return accum;
+  }

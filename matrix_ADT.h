@@ -88,4 +88,8 @@ struct Matrix *aERO(const struct Matrix *x, const int l, const int m, const doub
 // time: O(mn)
 struct Matrix *swapERO(const struct Matrix *x, const int l, const int m);
 
+// equality(x,y) returns 1 if x and y are equal. 0 otherwise
+// requires: x and y are valid
+// time: O(mn)
+bool equality(const struct Matrix *x, const struct Matrix *y);
 #endif
