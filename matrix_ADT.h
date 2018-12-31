@@ -34,9 +34,14 @@ double *get_data(const struct Matrix *x);
 // get_elem(x, m, n) returns the element at postion m,n in x
 double get_elem(const struct Matrix *x, const int m, const int n);
 
+// clone(x) returns a copy of matrix x
+struct Matrix *clone(const struct Matrix *x);
+
 // sizeof_data(x) returns the total number of elements
 int sizeof_data(const struct Matrix *x);
 
+// data_change(x, r) changes x->data to point a r
+// effects: original data is lost
 void data_change(struct Matrix *x, double *r);
 
 // print_matrix(x) outputs the x as a matrix
@@ -92,4 +97,6 @@ struct Matrix *swapERO(const struct Matrix *x, const int l, const int m);
 // requires: x and y are valid
 // time: O(mn)
 bool equality(const struct Matrix *x, const struct Matrix *y);
+
+struct Matrix *merger(const struct Matrix *x, const struct Matrix *y);
 #endif

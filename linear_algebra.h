@@ -66,9 +66,15 @@ void GE(struct Matrix *x);
 // time: O(mn)
 bool is_invertible(const struct Matrix *x);
 
+// inverse(x) returns the inverse of x
+// requires: x is valid and invertible
+// effects: new matrix created
+// time:
+void *inverse(const struct Matrix *x);
+
 // deter2(x) returns the determinant of a 2x2 matrix x
 // requires: x is valid
-double deter2(const struct Matrix *x);
+double det2(const struct Matrix *x);
 
 // deter(x) returns the determinant of a
 // requires: x is valid

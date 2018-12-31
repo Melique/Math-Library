@@ -251,17 +251,20 @@ void GE(struct Matrix *x){
   }
 }
 
-bool is_invertible(struct Matrix *x){
+bool is_invertible(const struct Matrix *x){
   assert(x);
   assert(is_matrix_valid(x));
 
   const int ROWS = get_rows(x);
-  GE(x);
+  struct Matrix *c = clone(x);
+  GE(c);
 
-  return rank(x) == ROWS;
+  bool result = rank(c) == ROWS;
+  free(c);
+  return result;
 }
 
-double deter2(const struct Matrix *x){
+double det2(const struct Matrix *x){
   assert(x);
   assert(is_matrix_valid(x));
   assert(get_rows(x) == 2 && get_columns(x) == 2);
@@ -271,6 +274,59 @@ double deter2(const struct Matrix *x){
   double result = data[0]*data[3] - data[1]*data[2];
   return result;
 }
+
+struct Matrix *inverse(const struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+  assert(is_invertible(x));
+
+  const int ROWS = get_rows(x);
+  const double *o_data = get_data(x);
+  struct Matrix *re;;
+
+  if(ROWS == 2){
+    const double det = det2(x); //det won't be zero
+    double *data = malloc(sizeof(data)*ROWS*ROWS);
+    data[0] = (1/det)*o_data[3];
+    data[1] = (1/det)*-1*o_data[1];
+    data[2] = (1/det)*-1*o_data[2];
+    data[3] = (1/det)*o_data[0];
+
+    re = matrix_create(ROWS, ROWS, data);
+  } else {
+    double *i_data = malloc(sizeof(double)*ROWS*ROWS);
+
+    for(int i = 0; i < ROWS; ++i){
+        for(int j = 0; j < ROWS; ++j){
+          i_data[i*ROWS + i] = 1;
+        }
+    }
+    struct Matrix *I = matrix_create(ROWS, ROWS, i_data);
+
+    struct Matrix *aug = merger(x, I);
+    GE(aug);
+    matrix_destroy(I);
+    double *aug_data = get_data(aug);
+
+    for(int i = 0; i < ROWS; ++i){
+      double scalar = aug_data[i*2*ROWS + i];
+      for(int j = 0; j < 2*ROWS; ++j){
+        aug_data[i*2*ROWS + j] /= scalar;
+      }
+    }
+
+    double *data = malloc(sizeof(data)*ROWS*ROWS);
+    for(int i = 0; i < ROWS; ++i){
+      for(int j = 0, k = ROWS; j < ROWS; ++j, ++k){
+        data[i*ROWS + j] = aug_data[i*2*ROWS + k];
+      }
+    }
+
+    re = matrix_create(ROWS, ROWS, data);
+  }
+  return re;
+}
+
 
 static double *partial_clone(const double *x, const int ROWS, int row, int col){
   assert(x);
@@ -301,7 +357,7 @@ double cofactor(const struct Matrix *x, const int row, const int col){
   if((ROWS - 1) == 2){ //BASE CASE
     double *re_data = partial_clone(data, ROWS - 1, row, col);
     struct Matrix *re = matrix_create(ROWS-1, ROWS-1, re_data);
-    accum = pow((-1), row + col)*deter2(re);
+    accum = pow((-1), row + col)*det2(re);
     free(re);
     return accum;
   }else{
@@ -324,7 +380,7 @@ double deter(const struct Matrix *x){
   double accum;
 
   if(ROWS == 1) return data[0];
-  else if(ROWS == 2) return deter2(x);
+  else if(ROWS == 2) return det2(x);
 
   for(int i = 0; i < ROWS; ++i){
     accum += data[i*ROWS]*cofactor(x, i, 0);

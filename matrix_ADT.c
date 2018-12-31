@@ -65,6 +65,24 @@ double get_elem(const struct Matrix *x, const int m, const int n){
   return x->data[m * x->cols + n];
 }
 
+struct Matrix *clone(const struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  const int ROWS = get_rows(x);
+  const int COLS = get_columns(x);
+  const double *DATA = get_data(x);
+  double *r = malloc(sizeof(double)*ROWS*COLS);
+
+  for(int i = 0; i < ROWS*COLS; ++i){
+    r[i] = DATA[i];
+  }
+
+  struct Matrix *re = matrix_create(ROWS, COLS, r);
+
+  return re;
+}
+
 int sizeof_data(const struct Matrix *x){
   assert(is_matrix_valid(x));
 
@@ -287,4 +305,31 @@ bool equality(const struct Matrix *x, const struct Matrix *y){
   }
 
   return 1;
+}
+
+struct Matrix *merger(const struct Matrix *x, const struct Matrix *y){
+  assert(x);
+  assert(is_matrix_valid(x));
+  assert(y);
+  assert(is_matrix_valid(x));
+  assert(get_rows(x) == get_columns(x));
+  assert(get_rows(x) == get_rows(y));
+
+  const int ROWS = get_rows(x);
+  const double *data_x = get_data(x);
+  const double *data_y = get_data(y);
+  double *data = malloc(sizeof(double)*2*ROWS*ROWS);
+
+  for(int i = 0; i < 2*ROWS; ++i){
+    for(int j = 0; j < ROWS; ++j){
+      if(i < ROWS){
+        data[i*2*ROWS + j] = data_x[i*ROWS + j];
+      } else {
+        data[j*2*ROWS + i] = data_y[(i%ROWS)*ROWS + j];
+      }
+    }
+  }
+
+  struct Matrix *re = matrix_create(ROWS, 2*ROWS, data);
+  return re;
 }
