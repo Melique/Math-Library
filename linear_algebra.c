@@ -7,7 +7,7 @@
 #include <string.h>
 #include "matrix_ADT.h"
 
-extern double deter(const struct Matrix *x);
+extern double det(const struct Matrix *x);
 extern double cofactor(const struct Matrix *x, const int row, const int col);
 // TODO: design for linear mappings and vector spaces
 //typedef struct Matrix *Matrix;
@@ -144,57 +144,57 @@ struct Matrix *perpendicular(const struct Matrix *x, const struct Matrix *y){
   return re;
 }
 
-static int arj_max(double *x, int a, int b, int ROWS, int COLS){
-  assert(x);
-
-  int track = a*COLS + b;
-  double large = x[a*COLS + b];
-
-  for(int i = a; i < ROWS; ++i){
-    //printf("%f \n", x[i*COLS + b]);
-    if(fabs(x[i*COLS + b]) > fabs(large)){
-      large = x[i*COLS + b];
-      track = i*COLS + b;
-    }
-  }
-  printf("INDEX: %d \nVALUE: %f", track, large);
-  return track;
-}
-
-
-void swap(double *x, const int ROWS, const int COLS, int l, int m){
-  assert(x);
-  assert(l >= 0);
-  assert(m >= 0);
-  assert(l <= ROWS);
-  assert(m <= ROWS);
-
-  double *row_l = malloc(sizeof(double)*COLS);
-  double *row_m = malloc(sizeof(double)*COLS);
-
-  for(int i = 0; i < COLS; ++i){
-    row_l[i] = x[l * COLS + i];
-    row_m[i] = x[m * COLS + i];
-  }
-
-  for(int i = 0; i < ROWS; ++i){
-    for(int j = 0; j < COLS; ++j){
-      if(i == l){
-        x[i*COLS + j] = row_m[j];
-      }
-      else if(i == m){
-        x[i*COLS + j] = row_l[j];
-      }
-      else {
-        x[i*COLS + j] = x[i*COLS + j];
-      }
-    }
-  }
-
-  free(row_l);
-  free(row_m);
-
-}
+// static int arj_max(double *x, int a, int b, int ROWS, int COLS){
+//   assert(x);
+//
+//   int track = a*COLS + b;
+//   double large = x[a*COLS + b];
+//
+//   for(int i = a; i < ROWS; ++i){
+//     //printf("%f \n", x[i*COLS + b]);
+//     if(fabs(x[i*COLS + b]) > fabs(large)){
+//       large = x[i*COLS + b];
+//       track = i*COLS + b;
+//     }
+//   }
+//   printf("INDEX: %d \nVALUE: %f", track, large);
+//   return track;
+// }
+//
+//
+// void swap(double *x, const int ROWS, const int COLS, int l, int m){
+//   assert(x);
+//   assert(l >= 0);
+//   assert(m >= 0);
+//   assert(l <= ROWS);
+//   assert(m <= ROWS);
+//
+//   double *row_l = malloc(sizeof(double)*COLS);
+//   double *row_m = malloc(sizeof(double)*COLS);
+//
+//   for(int i = 0; i < COLS; ++i){
+//     row_l[i] = x[l * COLS + i];
+//     row_m[i] = x[m * COLS + i];
+//   }
+//
+//   for(int i = 0; i < ROWS; ++i){
+//     for(int j = 0; j < COLS; ++j){
+//       if(i == l){
+//         x[i*COLS + j] = row_m[j];
+//       }
+//       else if(i == m){
+//         x[i*COLS + j] = row_l[j];
+//       }
+//       else {
+//         x[i*COLS + j] = x[i*COLS + j];
+//       }
+//     }
+//   }
+//
+//   free(row_l);
+//   free(row_m);
+//
+// }
 
 int rank(struct Matrix *x){
   assert(x);
@@ -214,15 +214,6 @@ int rank(struct Matrix *x){
     }
   }
 
-  // for(int i = 0; i < ROWS; ++i){
-  //   if(data[i*COLS + i] != 0){
-  //     ++track;
-  //   }
-  //   else {
-  //     for(int j = i)
-  //   }
-  // }
-
   return track;
 }
 
@@ -241,7 +232,7 @@ void GE(struct Matrix *x){
       if(i != j){
         float scalar = (data[i*COLS+i] != 0) ? data[j*COLS +i]/data[i*COLS+i]: 0;
         for(int k = 0; k < COLS; ++k){
-          if(data[j*COLS + k] == 0){
+          if(data[j*COLS + k] == 0){ //whats this?
 
           }
           data[j*COLS+k] = data[j*COLS+k] - scalar*data[i*COLS+k];
@@ -328,19 +319,22 @@ struct Matrix *inverse(const struct Matrix *x){
 }
 
 
-static double *partial_clone(const double *x, const int ROWS, int row, int col){
+double *partial_clone(const double *x, const int ROWS, int row, int col){
   assert(x);
-  assert((0 < row) && (row < ROWS));
-  assert((0 < col) && (col < ROWS));
+  assert((0 <= row) && (row < ROWS));
+  assert((0 <= col) && (col < ROWS));
 
-  double *re = malloc(sizeof(double)*ROWS*ROWS);
+  double *re = malloc(sizeof(double)*(ROWS-1)*(ROWS-1));
+  int track = 0;
 
   for(int i = 0; i < ROWS; ++i){
     for(int j = 0; j < ROWS; ++j){
-      if((i != row) || (j != col)) re[i*ROWS + j] = x[i*ROWS + j];
+      if((i != row) && (j != col)){
+      re[track] = x[i*ROWS + j];
+      ++track;
     }
   }
-
+}
   return re;
 }
 
@@ -348,43 +342,45 @@ double cofactor(const struct Matrix *x, const int row, const int col){
   assert(x);
   assert(is_matrix_valid(x));
   assert(get_rows(x) == get_columns(x));
-  //assert(((row != 0) && (col == 0)) || ((row == 0) && (col != 0)))
+  assert(get_rows(x) >= 2);
+
   const int ROWS = get_rows(x);
-  const double *data = get_data(x);
+  double re = 0;
 
-  double accum;
-
-  if((ROWS - 1) == 2){ //BASE CASE
-    double *re_data = partial_clone(data, ROWS - 1, row, col);
-    struct Matrix *re = matrix_create(ROWS-1, ROWS-1, re_data);
-    accum = pow((-1), row + col)*det2(re);
-    free(re);
-    return accum;
+  if(ROWS == 2){
+    int exp = pow(-1, row+col);
+    re = pow(-1, row+col)*det2(x);
   }else{
-    double *re_data = partial_clone(data, ROWS - 1, row, col);
-    struct Matrix *re = matrix_create(ROWS-1, ROWS-1, re_data);
-    double idk = deter(re);
-    accum = pow((-1), row + col)*idk;
-    free(re);
-    return accum;
+    double *partial = get_data(x);
+    partial = partial_clone(partial, ROWS, row, col);
+    struct Matrix *y = matrix_create(ROWS-1, ROWS-1, partial);
+    re += pow(-1, row+col)*det(y);
+    matrix_destroy(y);
   }
+
+  return re;
 }
 
-double deter(const struct Matrix *x){
+double det(const struct Matrix *x){
   assert(x);
   assert(is_matrix_valid(x));
   assert(get_rows(x) == get_columns(x));
 
   const int ROWS = get_rows(x);
-  const double *data = get_data(x);
-  double accum;
+  double *partial = get_data(x);
+  double re;
 
-  if(ROWS == 1) return data[0];
-  else if(ROWS == 2) return det2(x);
-
-  for(int i = 0; i < ROWS; ++i){
-    accum += data[i*ROWS]*cofactor(x, i, 0);
+  if(ROWS == 1){
+    return partial[0];
+  } else if (ROWS == 2){
+    re += det2(x);
+  } else {
+    for(int i = 0; i < ROWS; ++i){
+      double scalar = get_elem(x,i,0);
+      double factor = cofactor(x,i,0);
+      re += scalar*factor;
     }
-
-    return accum;
   }
+
+  return re;
+}

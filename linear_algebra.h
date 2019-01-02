@@ -79,11 +79,13 @@ double det2(const struct Matrix *x);
 // deter(x) returns the determinant of a
 // requires: x is valid
 // time:
-double deter(const struct Matrix *x);
+double det(const struct Matrix *x);
 
 // cofactor(x, i, j) returns the cofactor at row i or column j
 // requires: x is valid.
 // effects: new matrix is created
 // time:
-float cofactor(const struct Matrix *x, const int row, const int col);
+double cofactor(const struct Matrix *x, const int row, const int col);
+
+
 #endif
