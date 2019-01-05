@@ -186,16 +186,18 @@ struct Matrix *mmulti(const struct Matrix *x, const struct Matrix *y){
 
   const int ROWS = x->rows;
   const int COLS = y->cols;
-  struct Matrix *product = matrix_create(ROWS, COLS, x->data);
+  double *data = malloc(sizeof(double)*ROWS*COLS);
   const int length = x->cols;
 
   for(int i = 0; i < ROWS; ++i){
     for(int j = 0; j < COLS; ++j){
       for(int k = 0; k < length; ++k){
-        product->data[i * COLS + j] += x->data[i * COLS + k]*y->data[k*COLS + j];
+        data[i*COLS +j] += get_elem(x,i,k) * get_elem(y,k,j);
       }
     }
   }
+
+  struct Matrix *product = matrix_create(ROWS, COLS, data);
   return product;
 }
 

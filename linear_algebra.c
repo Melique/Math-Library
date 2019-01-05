@@ -591,3 +591,49 @@ struct Matrix *b_matrix(const struct Matrix *x, const struct Matrix *o_basis){
   struct Matrix *re = matrix_create(COLS, 1, cor_data);
   return re;
 }
+
+// struct Martix *QR(const struct Matrix *x){
+//   assert(x);
+//   assert(is_matrix_valid(x));
+//
+//   const int ROWS = get_rows(x);
+//   const int COLS = get_columns(x);
+//
+//   struct Matrix *q = GSP(x);
+//   double *r_data = malloc(sizoeof(double)*ROWS*COLS);
+//
+//   for(int i = 0; i < ROWS; ++i){
+//     for(int j = 0; j < COLS; ++j){
+//       if(j < i){
+//         double *x_data = get_vector(x,j);
+//         double *q_data = get_vector(q, i);
+//         struct Matrix *x_vector = matrix_create(ROWS, 1, x_data);
+//         struct Matrix *q_vector = matrix_create(ROWS, 1, q_data);
+//         r_data[i*COLS + j] = dot_product)=(x_vector, q_vector);
+//         matrix_destroy(x_data);
+//         matrix_destroy(q_data);
+//       }else{
+//         r_data[i*COLS + j] = 0;
+//       }
+//     }
+//   }
+//
+//   struct Matrix *R = matrix_create(ROWS, COLS, r_data);
+//   return R;
+// }
+
+struct Matrix *least_sqaures(const struct Matrix *x, const struct Matrix *y){
+  assert(x);
+  assert(is_matrix_valid(x));
+  assert(y);
+  assert(is_matrix_valid(y));
+
+  struct Matrix *x_tranpose = tranpose(x);
+  struct Matrix *product = mmulti(x_tranpose, x);
+  struct Matrix *inverse_product = inverse(product);
+  struct Matrix *y_product = mmulti(x_tranpose, y);
+
+  struct Matrix *re = mmulti(inverse_product, y_product);
+
+  return re;
+}
