@@ -87,5 +87,42 @@ double det(const struct Matrix *x);
 // time:
 double cofactor(const struct Matrix *x, const int row, const int col);
 
+// col(x) returns the column space of x
+// requires: x is valid
+// effects: new matrix allocated
+struct Matrix *col(struct Matrix *x);
+
+// null(x) returns the null space of x
+// requires: x is valid
+// effects: new matrix allocated
+struct Matrix *null(const struct Matrix *x);
+
+// row(x) returns the row space of x
+// requires: x is valid
+// effects: new matrix allocated
+struct Matrix *row(const struct Matrix *x);
+
+// null_T(x) returns the left null space of x
+// requires: x is valid
+// effects: new matrix allocated
+struct Matrix *null_T(const struct Matrix *x);
+
+// b_matrix(x, o_basis) returns the B Matrix of x
+// requires: x, o_basis are valid and o_basis is orthogonal basis
+// effects: new matrix allocated
+// note: uses standard inner product (dot product).
+//       the orthongoal basis should be read as size of of one vector by
+//       the number of vectors
+//       Ex. An orthogonal basis basis with 3 elements for M2X2(R). The matrix is
+//       4x3
+struct Matrix *b_matrix(const struct Matrix *x, const struct Matrix *y);
+
+// GSP(x) returns an orthgonal basis
+// requires: x is valid
+// effetcs: new matrix is allocated
+// note: standard inner product (dot product)
+struct Martix *GSP(const struct Matrix *x);
+
+
 
 #endif

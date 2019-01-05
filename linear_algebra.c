@@ -162,39 +162,39 @@ struct Matrix *perpendicular(const struct Matrix *x, const struct Matrix *y){
 // }
 //
 //
-// void swap(double *x, const int ROWS, const int COLS, int l, int m){
-//   assert(x);
-//   assert(l >= 0);
-//   assert(m >= 0);
-//   assert(l <= ROWS);
-//   assert(m <= ROWS);
-//
-//   double *row_l = malloc(sizeof(double)*COLS);
-//   double *row_m = malloc(sizeof(double)*COLS);
-//
-//   for(int i = 0; i < COLS; ++i){
-//     row_l[i] = x[l * COLS + i];
-//     row_m[i] = x[m * COLS + i];
-//   }
-//
-//   for(int i = 0; i < ROWS; ++i){
-//     for(int j = 0; j < COLS; ++j){
-//       if(i == l){
-//         x[i*COLS + j] = row_m[j];
-//       }
-//       else if(i == m){
-//         x[i*COLS + j] = row_l[j];
-//       }
-//       else {
-//         x[i*COLS + j] = x[i*COLS + j];
-//       }
-//     }
-//   }
-//
-//   free(row_l);
-//   free(row_m);
-//
-// }
+void swap(double *x, const int ROWS, const int COLS, int l, int m){
+  assert(x);
+  assert(l >= 0);
+  assert(m >= 0);
+  assert(l <= ROWS);
+  assert(m <= ROWS);
+
+  double *row_l = malloc(sizeof(double)*COLS);
+  double *row_m = malloc(sizeof(double)*COLS);
+
+  for(int i = 0; i < COLS; ++i){
+    row_l[i] = x[l * COLS + i];
+    row_m[i] = x[m * COLS + i];
+  }
+
+  for(int i = 0; i < ROWS; ++i){
+    for(int j = 0; j < COLS; ++j){
+      if(i == l){
+        x[i*COLS + j] = row_m[j];
+      }
+      else if(i == m){
+        x[i*COLS + j] = row_l[j];
+      }
+      else {
+        x[i*COLS + j] = x[i*COLS + j];
+      }
+    }
+  }
+
+  free(row_l);
+  free(row_m);
+
+}
 
 int rank(struct Matrix *x){
   assert(x);
@@ -230,7 +230,7 @@ void GE(struct Matrix *x){
   for(int i = 0; i < ROWS; ++i){
     for(int j = 0; j < COLS; ++j){
       if(i != j){
-        float scalar = (data[i*COLS+i] != 0) ? data[j*COLS +i]/data[i*COLS+i]: 0;
+        double scalar = (data[i*COLS+i] != 0) ? data[j*COLS +i]/data[i*COLS+i]: 0;
         for(int k = 0; k < COLS; ++k){
           if(data[j*COLS + k] == 0){ //whats this?
 
@@ -240,6 +240,27 @@ void GE(struct Matrix *x){
       }
     }
   }
+
+  for(int i = 0; i < ROWS; ++i){
+    double scalar = data[i*COLS + i];
+    if (scalar){
+      for(int j = 0; j < COLS; ++j){
+        data[i*COLS + j] /= scalar;
+      }
+    }
+  }
+
+  for(int i = 0; i < ROWS; ++i){
+    int track = 0;
+      for(int j = 0; j < COLS; ++j){
+        if(data[i*COLS + j] == 0) {
+          ++track;
+        }
+
+        if(track == COLS) swap(data,ROWS, COLS, i, ROWS-1);
+
+      }
+    }
 }
 
 bool is_invertible(const struct Matrix *x){
@@ -382,5 +403,191 @@ double det(const struct Matrix *x){
     }
   }
 
+  return re;
+}
+
+static int *lead_free(const struct Matrix *x, bool y){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  int track  = 0;
+  int num = 0;
+  const int ROWS = get_rows(x);
+
+  for(int i = 0; i < ROWS; ++i){
+    if(y){
+      if(get_elem(x,i,i) != 0){
+        ++num;
+      }
+    } else{
+      if(get_elem(x,i,i) == 0){
+        ++num;
+      }
+    }
+  }
+
+  int *indices = malloc(sizeof(int)*num+1);
+
+  for(int i = 0; i < ROWS; ++i){
+    if(y){
+      if(get_elem(x,i,i) != 0){
+        indices[track] = i;
+        ++track;
+      }
+    }else{
+      if(get_elem(x,i,i) == 0){
+        indices[track] = i;
+        ++track;
+      }
+    }
+  }
+  indices[-1] = num; //length
+  return indices;
+}
+
+struct Matrix *col(struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  const int ROWS = get_rows(x);
+  const int COL = get_columns(x);
+
+  struct Matrix *cl = clone(x);
+  GE(cl);
+
+  int *indices = lead_free(cl,1);
+  const int LENGTH = indices[-1];
+
+  double *data = malloc(sizeof(double)*LENGTH*ROWS);
+
+  for(int i = 0; i < LENGTH; ++i){
+    for(int j = 0; j < ROWS; ++j){
+      data[j*LENGTH + i] = get_elem(x,j,indices[i]);
+    }
+  }
+
+  struct Matrix *re = matrix_create(ROWS, LENGTH, data);
+  return re;
+}
+
+struct Matrix *null(struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  const int COLS = get_columns(x);
+
+  struct Matrix *cl = clone(x);
+  GE(cl);
+
+  int *indices = lead_free(cl,0);
+  const int LENGTH = indices[-1];
+  int track = 0;
+
+  double *data = malloc(sizeof(double)*LENGTH*COLS);
+
+  for(int i = 0; i < LENGTH; ++i){
+    for(int j = 0; j < COLS; ++j){
+      if(j == indices[track]){
+        data[j*LENGTH + i] = 1;
+      }else{
+        data[j*LENGTH + i] = -1*get_elem(cl, j,indices[track]);
+      }
+    }
+    ++track;
+  }
+
+  struct Matrix *re = matrix_create(COLS, LENGTH, data);
+  return re;
+
+
+}
+struct Matrix *row(struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  //const int ROWS = get_rows(x);
+  const int COLS = get_columns(x);
+
+  struct Matrix *cl = clone(x);
+  GE(cl);
+
+  int *indices = lead_free(cl,1);
+  const int LENGTH = indices[-1];
+  int track = 0;
+
+  double *data = malloc(sizeof(double)*LENGTH*COLS);
+
+  for(int i = 0; i < LENGTH; ++i){
+    for(int j = 0; j < COLS; ++j){
+      data[j*LENGTH + i] = get_elem(cl,indices[track],j);
+    }
+    ++track;
+  }
+
+  struct Matrix *re = matrix_create(COLS, LENGTH, data);
+  return re;
+}
+
+struct Matrix *null_T(struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  struct Matrix *cl = tranpose(x);
+  cl = null(cl);
+
+  return cl;
+}
+
+static double *get_vector(const struct Matrix *x, const int col){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  const int ROWS = get_rows(x);
+  const int COLS = get_columns(x);
+
+  double *vector = malloc(sizeof(double)*ROWS);
+  for(int i = 0; i < ROWS; ++i){
+    vector[i] = get_elem(x,i,col);
+  }
+
+  return vector;
+
+}
+
+static double cof(const struct Matrix *x, const struct Matrix *y){
+  assert(x);
+  assert(y);
+  assert(is_matrix_valid(x));
+  assert(is_matrix_valid(y));
+
+  double dot = dot_product(x, y);
+  double mag = magnitude(y)*magnitude(y);
+
+  return dot/mag;
+}
+
+struct Matrix *b_matrix(const struct Matrix *x, const struct Matrix *o_basis){
+  assert(x);
+  assert(o_basis);
+  assert(is_matrix_valid(x));
+  assert(is_matrix_valid(o_basis));
+
+  const int ROWS = get_rows(o_basis);
+  const int COLS = get_columns(o_basis);
+  const int SIZE = sizeof_data(x);
+  const double *x_data = get_data(x);
+
+  double *cor_data = malloc(sizeof(double)*COLS);
+
+  for(int i = 0; i < COLS; ++i){
+    double *v_data = get_vector(o_basis, i);
+
+    struct Matrix *vector = matrix_create(ROWS,1,v_data);
+
+    cor_data[i] = cof(x, vector);
+    matrix_destroy(vector);
+  }
+
+  struct Matrix *re = matrix_create(COLS, 1, cor_data);
   return re;
 }

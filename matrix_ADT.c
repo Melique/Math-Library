@@ -37,7 +37,12 @@ void matrix_destroy(struct Matrix *x){
 }
 
 bool is_matrix_valid(const struct Matrix *x){
-  return (x && (x->rows > 0) && (x->cols > 0) && x->data);
+  assert(x);
+  assert(x->rows > 0);
+  assert(x->cols > 0);
+  assert(x->data);
+
+  return 1;
 }
 
 int get_rows(const struct Matrix *x){
@@ -115,18 +120,22 @@ void print_matrix(const struct Matrix *x){
 struct Matrix *tranpose(const struct Matrix *x){
   assert(is_matrix_valid(x));
 
-  const int ROWS = x->cols;
-  const int COLS = x->rows;
+  const int ROWS = x->rows;
+  const int COLS = x->cols;
+  const int N = ROWS*COLS;
 
-  struct Matrix *trans_x = matrix_create(ROWS, COLS, x->data);
+  double *data_t = malloc(sizeof(double)*N);
 
-  for(int i = 0; i < ROWS; ++i){
-    for(int j = 0; j < COLS; ++j){
-      trans_x->data[i * COLS + j] = x->data[j * ROWS + i];
-    }
+  for(int i = 0; i < N; ++i){
+    int a = i/ROWS;
+    int b = i%ROWS;
+
+    data_t[i] = x->data[b*COLS + a];
   }
 
-  return trans_x;
+  struct Matrix *re = matrix_create(COLS, ROWS, data_t);
+
+  return re;
 }
 
 struct Matrix *add(const struct Matrix *x, const struct Matrix *y){
