@@ -26,7 +26,7 @@ double bisection(double a, double b, double (*fp)(double));
 double newton(double x, const double (*fp)(double), const double (*fprimep)(double));
 
 // num_dev(fp, x) uses the defition of a derivative to find an approximation of f'(x)
-// requires: fp is a valid function pointer and x is defined at f'(x)
+// requires: x is defined at f'(x)
 double num_dev(double (*fp)(double), const double x);
 
 #endif

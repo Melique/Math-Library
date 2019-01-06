@@ -22,6 +22,7 @@ double heron(const double alpha, double a, int n){
   }
 }
 
+
 double bisection(const double epi, double a, double b, double (*fp)(double)){
   assert(epi > 0);
   assert(a < b);
@@ -40,7 +41,9 @@ double bisection(const double epi, double a, double b, double (*fp)(double)){
     }
 }
 
+
 double newton(double x, const double (*fp)(double), const double (*fprimep)(double)){
+
   double next = x - (fp(x)/fprimep(x));
 
   if ((next - x) == 0.0)
@@ -50,6 +53,7 @@ double newton(double x, const double (*fp)(double), const double (*fprimep)(doub
   else
     return newton(next, fp, fprimep);
 }
+
 
 double num_dev(double (*fp)(double), const double x){
   const double DELTA = 1.0e8;
