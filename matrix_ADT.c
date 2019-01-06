@@ -19,7 +19,7 @@ struct Matrix *matrix_create(const int m, const int n, double *r){
   assert(n > 0);
   assert(r);
 
-  struct Matrix *x = (struct Matrix *) malloc(sizeof(struct Matrix));
+  struct Matrix *x =  malloc(sizeof(struct Matrix));
 
   x->rows = m;
   x->cols = n;
@@ -32,7 +32,6 @@ struct Matrix *matrix_create(const int m, const int n, double *r){
 
 void matrix_destroy(struct Matrix *x){
   assert(x);
-  assert(x->data);
 
   free(x);
   x = NULL;
@@ -271,7 +270,7 @@ struct Matrix *swapERO(const struct Matrix *x, const int l, const int m){
   assert(0 < l);
   assert(l <= x->rows);
   assert(0 < m);
-  assert(<= x->rows);
+  assert(m <= x->rows);
 
   const int ROWS = x->rows;
   const int COLS = x->cols;

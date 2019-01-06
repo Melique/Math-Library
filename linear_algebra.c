@@ -20,7 +20,7 @@ double dot_product(const struct Matrix *x, const struct Matrix *y){
   const int COLS = get_columns(x);
   const int ROWS = get_rows(x);
   const double *DATA_X = get_data(x);
-  const double *data_y = get_data(y);
+  const double *DATA_Y = get_data(y);
   double re = 0;
 
   for(int i=0; i < COLS*ROWS; ++i){
@@ -592,7 +592,7 @@ struct Matrix *b_matrix(const struct Matrix *x, const struct Matrix *o_basis){
 
 
 struct Matrix *GSP_help(struct Matrix *o_vectors, struct Matrix *col_vector, int interation){
-  assert(is_matrix_valid(x));
+  assert(is_matrix_valid(o_vectors));
   assert(is_matrix_valid(col_vector));
 
   const int ROWS = get_rows(o_vectors);
@@ -617,6 +617,7 @@ struct Matrix *GSP_help(struct Matrix *o_vectors, struct Matrix *col_vector, int
   return re;
 }
 
+
 struct Matrix *GSP(const struct Matrix *x){
   assert(is_matrix_valid(x));
 
@@ -629,6 +630,7 @@ struct Matrix *GSP(const struct Matrix *x){
   for(int i = 0; i < ROWS; ++i){
     o_data[i*COLS] = first_data[i];
   }
+  free(first_data);
 
   struct Matrix *o_vectors = matrix_create(ROWS, COLS, o_data);
 
@@ -666,6 +668,7 @@ struct Matrix *QR(const struct Matrix *x){
   struct Matrix *R = mmulti(Q_T, x);
   return R;
 }
+
 
 struct Matrix *least_sqaures(const struct Matrix *x, const struct Matrix *y){
   assert(is_matrix_valid(x));
