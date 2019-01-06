@@ -107,6 +107,8 @@ struct Matrix *row(const struct Matrix *x);
 // effects: new matrix allocated
 struct Matrix *null_T(const struct Matrix *x);
 
+struct Matrix *normalizer(const struct Matrix *x);
+
 // b_matrix(x, o_basis) returns the B Matrix of x
 // requires: x, o_basis are valid and o_basis is orthogonal basis
 // effects: new matrix allocated
@@ -121,7 +123,7 @@ struct Matrix *b_matrix(const struct Matrix *x, const struct Matrix *y);
 // requires: x is valid
 // effetcs: new matrix is allocated
 // note: standard inner product (dot product)
-//       If the zero vector appears simply remove it 
+//       If the zero vector appears simply remove it
 struct Matrix *GSP(const struct Matrix *x);
 
 // GSP(x) returns a QR decompostion of x

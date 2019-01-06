@@ -554,6 +554,32 @@ static double *get_vector(const struct Matrix *x, const int col){
 
 }
 
+struct Matrix *normalizer(const struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  const int ROWS = get_rows(x);
+  const int COLS = get_columns(x);
+  double *new_data = malloc(sizeof(double)*ROWS*COLS);
+
+  for(int i = 0; i < COLS; ++i){
+    double *data = get_vector(x, i);
+    struct Matrix *vector = matrix_create(ROWS, 1, data);
+    double mag = magnitude(vector);
+    mag = (mag != 0) ? 1/mag: 0;
+    struct Matrix *normal = smulti(vector, mag);
+    double *normal_data = get_data(normal);
+    for(int j = 0; j < ROWS; ++j){
+      new_data[j*COLS+i] = normal_data[j];
+    }
+    matrix_destroy(vector);
+    matrix_destroy(normal);
+  }
+
+  struct Matrix *re = matrix_create(ROWS, COLS, new_data);
+  return re;
+}
+
 static double cof(const struct Matrix *x, const struct Matrix *y){
   assert(x);
   assert(y);
@@ -608,8 +634,6 @@ struct Matrix *GSP_help(struct Matrix *o_vectors, struct Matrix *col_vector, int
   }
 
   struct Matrix *re = add(col_vector, so_far);
-  print_matrix(re);
-  printf("\n");
   matrix_destroy(so_far);
 
   return re;
@@ -655,26 +679,10 @@ struct Matrix *QR(const struct Matrix *x){
   const int ROWS = get_rows(x);
   const int COLS = get_columns(x);
 
-  struct Matrix *q = GSP(x);
-  double *r_data = malloc(sizeof(double)*ROWS*COLS);
-
-  for(int i = 0; i < ROWS; ++i){
-    for(int j = 0; j < COLS; ++j){
-      if(j < i){
-        double *x_data = get_vector(x,j);
-        double *q_data = get_vector(q, i);
-        struct Matrix *x_vector = matrix_create(ROWS, 1, x_data);
-        struct Matrix *q_vector = matrix_create(ROWS, 1, q_data);
-        r_data[i*COLS + j] = dot_product)=(x_vector, q_vector);
-        matrix_destroy(x_data);
-        matrix_destroy(q_data);
-      }else{
-        r_data[i*COLS + j] = 0;
-      }
-    }
-  }
-
-  struct Matrix *R = matrix_create(ROWS, COLS, r_data);
+  struct Matrix *Q = GSP(x);
+  Q = normalizer(Q);
+  const struct Matrix *Q_T = tranpose(Q);
+  struct Matrix *R = mmulti(Q_T, x);
   return R;
 }
 
