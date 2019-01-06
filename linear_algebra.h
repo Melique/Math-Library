@@ -121,12 +121,13 @@ struct Matrix *b_matrix(const struct Matrix *x, const struct Matrix *y);
 // requires: x is valid
 // effetcs: new matrix is allocated
 // note: standard inner product (dot product)
-struct Martix *GSP(const struct Matrix *x);
+//       If the zero vector appears simply remove it 
+struct Matrix *GSP(const struct Matrix *x);
 
 // GSP(x) returns a QR decompostion of x
 // requires: x is valid. dim Col(x) = n
 // effetcs: new matrix is allocated
-struct Martix *QR(const struct Matrix *x);
+struct Matrix *QR(const struct Matrix *x);
 
 // least_squares(x, y) applies the method of least squares to find a polynomial of
 //  best fit

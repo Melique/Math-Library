@@ -592,35 +592,91 @@ struct Matrix *b_matrix(const struct Matrix *x, const struct Matrix *o_basis){
   return re;
 }
 
-// struct Martix *QR(const struct Matrix *x){
-//   assert(x);
-//   assert(is_matrix_valid(x));
-//
-//   const int ROWS = get_rows(x);
-//   const int COLS = get_columns(x);
-//
-//   struct Matrix *q = GSP(x);
-//   double *r_data = malloc(sizoeof(double)*ROWS*COLS);
-//
-//   for(int i = 0; i < ROWS; ++i){
-//     for(int j = 0; j < COLS; ++j){
-//       if(j < i){
-//         double *x_data = get_vector(x,j);
-//         double *q_data = get_vector(q, i);
-//         struct Matrix *x_vector = matrix_create(ROWS, 1, x_data);
-//         struct Matrix *q_vector = matrix_create(ROWS, 1, q_data);
-//         r_data[i*COLS + j] = dot_product)=(x_vector, q_vector);
-//         matrix_destroy(x_data);
-//         matrix_destroy(q_data);
-//       }else{
-//         r_data[i*COLS + j] = 0;
-//       }
-//     }
-//   }
-//
-//   struct Matrix *R = matrix_create(ROWS, COLS, r_data);
-//   return R;
-// }
+struct Matrix *GSP_help(struct Matrix *o_vectors, struct Matrix *col_vector, int interation){
+  const int ROWS = get_rows(o_vectors);
+  double *test = calloc(ROWS, sizeof(double));
+  struct Matrix *so_far = matrix_create(ROWS, 1, test);
+
+  for(int i = 0; i < interation; ++i){
+    double *o_data= get_vector(o_vectors, i);
+    struct Matrix *o_vector = matrix_create(ROWS, 1, o_data);
+    double scalar = -cof(col_vector, o_vector);
+    struct Matrix *new_vector = smulti(o_vector,scalar);
+    so_far = add(new_vector, so_far);
+    matrix_destroy(o_vector);
+    matrix_destroy(new_vector);
+  }
+
+  struct Matrix *re = add(col_vector, so_far);
+  print_matrix(re);
+  printf("\n");
+  matrix_destroy(so_far);
+
+  return re;
+}
+struct Matrix *GSP(const struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  const int ROWS = get_rows(x);
+  const int COLS = get_columns(x);
+
+  double *o_data = malloc(sizeof(double)*COLS*ROWS);
+
+  double *first_data = get_vector(x, 0);
+  for(int i = 0; i < ROWS; ++i){
+    o_data[i*COLS] = first_data[i];
+  }
+
+
+  struct Matrix *o_vectors = matrix_create(ROWS, COLS, o_data);
+
+
+  for(int i = 1; i < COLS; ++i){
+    double *col_data = get_vector(x, i);
+    struct Matrix *col_vector = matrix_create(ROWS, 1, col_data);
+    struct Matrix *new_vector = GSP_help(o_vectors, col_vector, i);
+    double *new_data = get_data(new_vector);
+    for(int j = 0; j < ROWS; ++j){
+      o_data[j*COLS+i] = new_data[j];
+    }
+    matrix_destroy(col_vector);
+    matrix_destroy(new_vector);
+    data_change(o_vectors, o_data);
+  }
+
+  return o_vectors;
+}
+
+struct Matrix *QR(const struct Matrix *x){
+  assert(x);
+  assert(is_matrix_valid(x));
+
+  const int ROWS = get_rows(x);
+  const int COLS = get_columns(x);
+
+  struct Matrix *q = GSP(x);
+  double *r_data = malloc(sizeof(double)*ROWS*COLS);
+
+  for(int i = 0; i < ROWS; ++i){
+    for(int j = 0; j < COLS; ++j){
+      if(j < i){
+        double *x_data = get_vector(x,j);
+        double *q_data = get_vector(q, i);
+        struct Matrix *x_vector = matrix_create(ROWS, 1, x_data);
+        struct Matrix *q_vector = matrix_create(ROWS, 1, q_data);
+        r_data[i*COLS + j] = dot_product)=(x_vector, q_vector);
+        matrix_destroy(x_data);
+        matrix_destroy(q_data);
+      }else{
+        r_data[i*COLS + j] = 0;
+      }
+    }
+  }
+
+  struct Matrix *R = matrix_create(ROWS, COLS, r_data);
+  return R;
+}
 
 struct Matrix *least_sqaures(const struct Matrix *x, const struct Matrix *y){
   assert(x);
