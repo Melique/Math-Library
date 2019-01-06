@@ -9,10 +9,10 @@
 bool is_prime(const int n){
   assert(n > 1);
 
-  const int root_n = sqrt(n);
+  const int ROOT_N = sqrt(n);
   int track = 0;
 
-  for(int i =2 ; i <= root_n; ++i){
+  for(int i =2 ; i <= ROOT_N; ++i){
     if(n % i == 0) {
       track = 1;
       break;
@@ -23,10 +23,10 @@ bool is_prime(const int n){
 }
 
 
-int* division_alg(const int a, const int b){
+int *division_alg(const int a, const int b){
   assert(b > 0);
 
-  int *re = malloc(sizeof(int)*2);
+  int *re = malloc(sizeof(int) * 2);
   int q = a/b;
   int r = a-b*q;
 
@@ -136,61 +136,4 @@ int** PF(const int a){
   re[2] = &len;
 
   return re;
-}
-
-long SM(double a, const double e, const int n){
-  int i = 2;
-  const double ori = a;
-
-  while(i < e){
-    a = (long) pow(a, 2) %  n;
-    i *= 2;
-  }
-
-  i /= 2;
-
-  long rest = (long) pow(ori, (e-i)) % n;
-  long re = (long) (a*rest) %  n;
-  return re;
-}
-
-int ** RSA_setUp(const int p, const int q){
-  assert(is_prime(p));
-  assert(is_prime(q));
-
-  const int n = p*q;
-  const int r = (p-1)*(q-1);
-  int e;
-
-  for(int i = 2; i < r; ++i){
-    if(EE(i,r) == 1){
-      e=i;
-      break;
-    }
-  }
-
-  const int *re = EEA(r,e);
-  int *public = malloc(sizeof(int)*2);
-  int *private = malloc(sizeof(int)*2);
-
-  const int d = (re[1] > 0) ? re[1]: re[1]+r;
-
-  public[0] = e;
-  public[1] = n;
-  private[0] = d;
-  private[1] = n;
-
-  int **test = malloc(sizeof(int*)*2);
-  test[0] = public;
-  test[1] = private;
-
-  return test;
-}
-
-long RSA_encrypt(int m, int e, int n){
-  assert(0 <= m);
-  assert(m < n);
-
-  const long C = SM(m, e, n);
-  return C;
 }
